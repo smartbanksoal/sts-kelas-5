@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="jv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis STS Bahasa Jawa Kelas 5</title>
+    <style>
+        /* CSS Variabel & Reset */
+        :root {
+            --primary: #4F46E5;
+            --secondary: #EC4899;
+            --bg-color: #F3F4F6;
+            --text-color: #1F2937;
+            --correct: #10B981;
+            --wrong: #EF4444;
+            --dark: #111827;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Proteksi Anti-Copy */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            padding-bottom: 60px; /* Space for footer */
+        }
+
+        /* Header & Footer */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        footer a { color: #60A5FA; text-decoration: none; font-weight: bold; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Container Umum */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        /* Layar Login Khusus Menarik */
+        #login-screen.container {
+            background: linear-gradient(to bottom right, #ffffff, #fdf2f8);
+            border: 2px solid var(--secondary);
+        }
+        .login-title {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .form-group input {
+            width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; }
+        
+        /* Tombol */
+        .btn {
+            display: block; width: 100%; padding: 15px; margin-top: 15px;
+            background-color: var(--primary); color: white; border: none; border-radius: 8px;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover { background-color: #4338CA; }
+        .btn-home { background-color: var(--dark); }
+        .btn-home:hover { background-color: #000; }
+        .btn-nav { display: inline-block; width: 48%; margin-top: 20px; }
+        
+        /* Opsi Jawaban */
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
+        .option-btn {
+            padding: 15px; text-align: left; background: #F9FAFB; border: 2px solid #E5E7EB;
+            border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #EEF2FF; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-btn.correct { background-color: var(--correct); color: white; border-color: var(--correct); }
+        .option-btn.wrong { background-color: var(--wrong); color: white; border-color: var(--wrong); }
+
+        /* Elemen Kuis Tambahan */
+        .live-score { font-weight: bold; color: var(--primary); float: right; }
+        .question-text { font-size: 1.2rem; margin-bottom: 15px; font-weight: 600; line-height: 1.5; }
+        .img-container { text-align: center; margin: 15px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .pembahasan-box {
+            display: none; background: #ECFDF5; border-left: 5px solid var(--correct);
+            padding: 15px; margin-top: 20px; border-radius: 4px;
+        }
+
+        /* Riwayat Skor */
+        .history-container { margin-top: 30px; border-top: 2px dashed #E5E7EB; padding-top: 20px; }
+        .history-list { list-style: none; }
+        .history-list li { background: #F3F4F6; padding: 10px; margin-bottom: 8px; border-radius: 6px; font-size: 0.9rem; }
+
+        /* Utility */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+
+    <header>Kode Soal: JWA-STS-K5-S2-HOTS</header>
+
+    <div id="login-screen" class="container">
+        <h1 class="login-title">✨ Ujian Sumatif Tengah Semester ✨<br>Bahasa Jawa Kelas 5</h1>
+        <div class="form-group">
+            <label>Nama Lengkap:</label>
+            <input type="text" id="input-nama" placeholder="Masukkan nama lengkapmu..." required>
+        </div>
+        <div class="form-group">
+            <label>Kelas:</label>
+            <input type="text" id="input-kelas" placeholder="Contoh: 5A" required>
+        </div>
+        <button class="btn" onclick="startQuiz()">🚀 Mulai Kuis</button>
+        <button class="btn btn-home" onclick="window.location.href='../index.html'">🏠 Kembali ke Home</button>
+
+        <div class="history-container">
+            <h3>🏆 Riwayat Skor Terakhir</h3>
+            <ul id="history-list" class="history-list">
+                </ul>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="container hidden">
+        <div>
+            <span id="question-counter" style="font-weight: bold;">Soal 1/25</span>
+            <span class="live-score">Skor: <span id="current-score">0</span></span>
+        </div>
+        <hr style="margin: 15px 0; border: 1px solid #E5E7EB;">
+        
+        <div id="image-wrapper" class="img-container hidden">
+            <img id="question-image" src="" alt="Gambar Soal">
+            <p id="image-caption" style="font-size: 0.8rem; color: #6B7280;"></p>
+        </div>
+
+        <div class="question-text" id="question-text">Teks Soal</div>
+        
+        <div class="options-grid" id="options-grid">
+            </div>
+
+        <div id="pembahasan" class="pembahasan-box">
+            <strong>💡 Pembahasan:</strong> <span id="pembahasan-text"></span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <button id="btn-prev" class="btn btn-nav hidden" onclick="prevQuestion()">⬅️ Sebelumnya</button>
+            <button id="btn-next" class="btn btn-nav hidden" onclick="nextQuestion()">Selanjutnya ➡️</button>
+            <button id="btn-finish" class="btn btn-nav hidden" style="background-color: var(--correct);" onclick="finishQuiz()">Selesai & Simpan 💾</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="container hidden" style="text-align: center;">
+        <h2>🎉 Kuis Selesai! 🎉</h2>
+        <p style="font-size: 1.2rem; margin: 20px 0;">Terima kasih, <strong id="result-nama"></strong> dari kelas <strong id="result-kelas"></strong>.</p>
+        <div style="font-size: 4rem; font-weight: bold; color: var(--primary); margin: 20px 0;">
+            <span id="final-score">100</span>
+        </div>
+        <button class="btn" onclick="location.reload()">🔄 Kembali ke Login</button>
+    </div>
+
+    <footer>
+        &copy;<span id="current-year"></span> Oleh: Dwi Endrasto | Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank" rel="noopener noreferrer">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        // Set Tahun Otomatis
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Kunci unik untuk LocalStorage agar tidak bentrok
+        const STORAGE_KEY = 'jwa_sts_k5_s2_history_db';
+
+        // Data Soal (25 Soal, 5 Bergambar, Opsi persis 3 Kata, HOTS B.Jawa K5)
+        const dbQuestions = [
+            {
+                q: "Gambar kasebut nuduhake ciri tembang macapat kang nduweni paugeran 8a, 11i, 8u, 7a, 12u, 8a, 8i. Tembang apa iku?",
+                img: "gambar/jawa1.jpg", alt: "Gambar Ciri Tembang Pangkur",
+                options: [{t:"Tembang macapat pangkur", c:true}, {t:"Tembang macapat maskumambang", c:false}, {t:"Tembang macapat sinom", c:false}, {t:"Tembang macapat pocung", c:false}],
+                pembahasan: "Paugeran kasebut minangka paugeran saka tembang Pangkur."
+            },
+            {
+                q: "Tembang Pangkur asring digunakake kanggo ngandharake pitutur kang...",
+                img: "", alt: "",
+                options: [{t:"Serius lan tegas", c:true}, {t:"Santai lan guyon", c:false}, {t:"Sedhih lan nelangsa", c:false}, {t:"Seneng lan gumbira", c:false}],
+                pembahasan: "Tembang Pangkur wateke sereng, tegas, lan asring kanggo menehi pitutur utawa wejangan."
+            },
+            {
+                q: "Puisi Jawa gagrag anyar kang ora kaiket dening paugeran diarani...",
+                img: "", alt: "",
+                options: [{t:"Karya sastra geguritan", c:true}, {t:"Karya sastra tembang", c:false}, {t:"Karya sastra gancaran", c:false}, {t:"Karya sastra parikan", c:false}],
+                pembahasan: "Geguritan yaiku puisi Jawa anyar kang bebas ora kaiket paugeran kaya dene macapat."
+            },
+            {
+                q: "Geguritan kang nyritakake rusake alam amarga ulah manungsa ngemu pesen supaya...",
+                img: "", alt: "",
+                options: [{t:"Njaga kelestarian lingkungan", c:true}, {t:"Ngrusak wit-witan alas", c:false}, {t:"Mbuwang sampah sembarangan", c:false}, {t:"Nggawe omah mewah", c:false}],
+                pembahasan: "Geguritan babagan alam biasane ngajak supaya manungsa dadi obyek njaga kelestarian lingkungan."
+            },
+            {
+                q: "Cariyos rakyat ingkang dipunanggep leres-leres kedadosan lan gegayutan kaliyan asal-usul panggenan dipunarani...",
+                img: "", alt: "",
+                options: [{t:"Cariyos rakyat legenda", c:true}, {t:"Cariyos rakyat mite", c:false}, {t:"Cariyos rakyat fabel", c:false}, {t:"Cariyos rakyat sage", c:false}],
+                pembahasan: "Legenda yaiku dongeng kang gegayutan karo dumadine sawijining panggonan utawa wewengkon."
+            },
+            {
+                q: "Gatekna gambar ing ngisor iki. Ciri utomo saka crita legenda yaiku...",
+                img: "gambar/jawa6.jpg", alt: "Gambar Ilustrasi Legenda",
+                options: [{t:"Asal usul panggonan", c:true}, {t:"Nyritakake dongeng kewan", c:false}, {t:"Nyritakake para dewa", c:false}, {t:"Nyritakake riwayat pahlawan", c:false}],
+                pembahasan: "Legenda mesthi ana gegayutane karo asal usul dumadine panggonan."
+            },
+            {
+                q: "Rawa Pening dumadi amarga sifat gumedhe para warga. Pesen morale yaiku...",
+                img: "", alt: "",
+                options: [{t:"Aja tumindak sombong", c:true}, {t:"Kudu seneng tetulung", c:false}, {t:"Aja gampang nesu", c:false}, {t:"Kudu sregep sinau", c:false}],
+                pembahasan: "Sifat gumedhe utawa sombong bakal ndadekake cilaka kaya warga ing crita Rawa Pening."
+            },
+            {
+                q: "Tembung 'wewadi' ing ukara 'Kowe kudu bisa njaga wewadi iki' tegese...",
+                img: "", alt: "",
+                options: [{t:"Sawijining bab rahasia", c:true}, {t:"Sawijining bab warta", c:false}, {t:"Sawijining bab crita", c:false}, {t:"Sawijining bab bandha", c:false}],
+                pembahasan: "Wewadi tegese padha karo rahasia utawa wadi kang kudu disimpen."
+            },
+            {
+                q: "Mingkar mingkuring angkara, akarana karanan mardi ... Tembung kang trep kanggo nglengkapi yaiku...",
+                img: "", alt: "",
+                options: [{t:"Mardi siwi iku", c:true}, {t:"Mardi guru iku", c:false}, {t:"Mardi kanca iku", c:false}, {t:"Mardi dulur iku", c:false}],
+                pembahasan: "Ukara candhake yaiku 'akarana karanan mardi siwi' kang tegese ndidik utawa ngajari anak."
+            },
+            {
+                q: "Tembang pangkur nduweni guru gatra...",
+                img: "", alt: "",
+                options: [{t:"Pitu cacahing gatra", c:true}, {t:"Wolu cacahing gatra", c:false}, {t:"Sanga cacahing gatra", c:false}, {t:"Sepuluh cacahing gatra", c:false}],
+                pembahasan: "Guru gatra (jumlah baris) tembang pangkur ana pitu (7) baris saben sapada."
+            },
+            {
+                q: "Tembang macapat ing gambar kasebut nduweni guru wilangan lan guru lagu 12u, padha karo tembang...",
+                img: "gambar/jawa11.jpg", alt: "Gambar Cakepan Tembang",
+                options: [{t:"Tembang macapat pocung", c:true}, {t:"Tembang macapat megatruh", c:false}, {t:"Tembang macapat kinanthi", c:false}, {t:"Tembang macapat asmaradana", c:false}],
+                pembahasan: "Tembang Pocung nduweni gatra kapisan kanthi paugeran 12u."
+            },
+            {
+                q: "Supaya pamireng bisa ngrasakake isine geguritan, pamaca kudu nggatekake...",
+                img: "", alt: "",
+                options: [{t:"Wirama lan wirasa", c:true}, {t:"Sandhangan lan sepatu", c:false}, {t:"Kanca lan guru", c:false}, {t:"Panggung lan swara", c:false}],
+                pembahasan: "Maca geguritan kudu nggatekake wirama (nada), wirasa (perasaan), lan wiraga (ekspresi)."
+            },
+            {
+                q: "Geguritan babagan pahlawan kang gugur ing palagan, becike diwaca kanthi ekspresi...",
+                img: "", alt: "",
+                options: [{t:"Kanthi rasa sedhih", c:true}, {t:"Kanthi rasa seneng", c:false}, {t:"Kanthi rasa bungah", c:false}, {t:"Kanthi rasa guyon", c:false}],
+                pembahasan: "Kahanan pahlawan gugur nuwuhake rasa sedhih lan trenyuh."
+            },
+            {
+                q: "Ing crita asal-usul huruf Jawa, abdi setiane Aji Saka kang tanding mati yaiku...",
+                img: "", alt: "",
+                options: [{t:"Dora lan Sembada", c:true}, {t:"Jaka lan Tarub", c:false}, {t:"Rama lan Sinta", c:false}, {t:"Nakula lan Sadewa", c:false}],
+                pembahasan: "Dora lan Sembada iku abdi kinasih Aji Saka kang mati amarga padha-padha ngugemi janjine."
+            },
+            {
+                q: "Tembung 'duka' ing basa krama alus nduweni teges...",
+                img: "", alt: "",
+                options: [{t:"Rasa lagi nesu", c:true}, {t:"Rasa lagi seneng", c:false}, {t:"Rasa lagi sedhih", c:false}, {t:"Rasa lagi lara", c:false}],
+                pembahasan: "Duka tegese nesu utawa muring-muring ing basa ngoko."
+            },
+            {
+                q: "Gambar iki nuduhake latar panggonan crita. Latar kalebu salah sawijining...",
+                img: "gambar/jawa16.jpg", alt: "Gambar Latar Panggonan",
+                options: [{t:"Unsur intrinsik crita", c:true}, {t:"Unsur ekstrinsik crita", c:false}, {t:"Unsur pambangun njaba", c:false}, {t:"Unsur pambangun tokoh", c:false}],
+                pembahasan: "Latar, tema, alur, tokoh kalebu unsur intrinsik kang mbangun crita saka njero."
+            },
+            {
+                q: "Bawang Abang seneng nglarani atine Bawang Putih. Bawang Abang nduweni watak...",
+                img: "", alt: "",
+                options: [{t:"Ala lan srakah", c:true}, {t:"Apik lan sabar", c:false}, {t:"Sregep lan pinter", c:false}, {t:"Seneng tetulung liyan", c:false}],
+                pembahasan: "Watake Bawang Abang iku antagonis, tegese ala lan seneng milara liyan."
+            },
+            {
+                q: "Saking cariyos Malin Kundang, kapethik pesen bilih dadi bocah kudu...",
+                img: "", alt: "",
+                options: [{t:"Bekti marang wongtuwa", c:true}, {t:"Wani marang wongtuwa", c:false}, {t:"Nglawan marang wongtuwa", c:false}, {t:"Lali marang wongtuwa", c:false}],
+                pembahasan: "Malin Kundang dadi watu amarga wani ibune, awake dhewe kudu bekti marang wong tuwa."
+            },
+            {
+                q: "Pasuryan kang mrengut nalika maca geguritan cocok kanggo tema...",
+                img: "", alt: "",
+                options: [{t:"Kahanan kang nggregetake", c:true}, {t:"Kahanan kang nyenengake", c:false}, {t:"Kahanan kang nentremake", c:false}, {t:"Kahanan kang mbungahake", c:false}],
+                pembahasan: "Mrengut nuduhake rasa nesu utawa ora lila marang kahanan kang nggregetake ati."
+            },
+            {
+                q: "Geguritan 'Ibu, luhmu dadi dalan swargaku' ngemu makna tersirat...",
+                img: "", alt: "",
+                options: [{t:"Gedhe pangorbanane ibu", c:true}, {t:"Ibu seneng nangis", c:false}, {t:"Swarga ana dalane", c:false}, {t:"Anak gawe nangis", c:false}],
+                pembahasan: "Tembung kasebut minangka kiasan yen gedhene pangorbanan ibu ndadekake anak mlebu swarga."
+            },
+            {
+                q: "Coba wacanen teks ing gambar! Cakepan kasebut kalebu...",
+                img: "gambar/jawa21.jpg", alt: "Gambar Cakepan Tembang",
+                options: [{t:"Jinis tembang macapat", c:true}, {t:"Jinis tembang dolanan", c:false}, {t:"Jinis tembang campursari", c:false}, {t:"Jinis tembang gedhe", c:false}],
+                pembahasan: "Pangkur, Sinom, Pocung iku kabeh kalebu jinis tembang macapat."
+            },
+            {
+                q: "Senajan wujud fiksi, nanging ing legenda Sangkuriang ana fakta awujud...",
+                img: "", alt: "",
+                options: [{t:"Gunung Tangkuban Prahu", c:true}, {t:"Anane prau mabur", c:false}, {t:"Anane manungsa sekti", c:false}, {t:"Anane kewan ngomong", c:false}],
+                pembahasan: "Legenda asring digayutake karo fakta wujud peninggalan alam utawa panggonan nyata."
+            },
+            {
+                q: "Guru lagu ing gatra pungkasan tembang Pangkur yaiku...",
+                img: "", alt: "",
+                options: [{t:"Tibaning swara i", c:true}, {t:"Tibaning swara a", c:false}, {t:"Tibaning swara u", c:false}, {t:"Tibaning swara e", c:false}],
+                pembahasan: "Paugeran Pangkur pungkasane gatra kapitu yaiku 8i. Mula tibaning swara 'i'."
+            },
+            {
+                q: "Gatra kaping loro tembang Pangkur nduweni guru wilangan lan lagu...",
+                img: "", alt: "",
+                options: [{t:"Sewelas wandane i", c:true}, {t:"Wolu wandane a", c:false}, {t:"Pitu wandane a", c:false}, {t:"Wolu wandane i", c:false}],
+                pembahasan: "Gatra kapindho tembang Pangkur nduweni paugeran 11i."
+            },
+            {
+                q: "Supaya anggone maca geguritan katon wajar, gerakane awak ora kena...",
+                img: "", alt: "",
+                options: [{t:"Digawe kaku banget", c:true}, {t:"Luwes tur pantes", c:false}, {t:"Jumbuh karo isine", c:false}, {t:"Alon tur tatas", c:false}],
+                pembahasan: "Gerak (wiraga) kudu wajar lan luwes, ora entuk kaku supaya pamireng bisa melu ngrasakake."
+            }
+        ];
+
+        let quizState = {
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            studentName: '',
+            studentClass: '',
+            answeredStatus: [] // Simpan status terjawab tiap index: {answered: bool, correctIndex: int, selectedIndex: int}
+        };
+
+        // Utility: Acak Array (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // Render Riwayat
+        function renderHistory() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            const historyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if(historyData.length === 0) {
+                historyList.innerHTML = '<li>Belum ada riwayat kuis.</li>';
+                return;
+            }
+
+            historyData.reverse().forEach(data => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${data.name}</strong> (${data.class}) - Skor: <strong>${data.score}</strong> <br><small>🕒 ${data.time}</small>`;
+                historyList.appendChild(li);
+            });
+        }
+
+        window.onload = renderHistory;
+
+        // Mulai Kuis
+        function startQuiz() {
+            const name = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('input-kelas').value.trim();
+
+            if (!name || !kelas) {
+                alert('Silakan isi Nama dan Kelas terlebih dahulu!');
+                return;
+            }
+
+            quizState.studentName = name;
+            quizState.studentClass = kelas;
+            quizState.score = 0;
+            quizState.currentIndex = 0;
+            
+            // Persiapkan dan acak pertanyaan serta opsi jawaban
+            let clonedData = JSON.parse(JSON.stringify(dbQuestions));
+            quizState.questions = shuffleArray(clonedData).map(q => {
+                q.options = shuffleArray(q.options);
+                return q;
+            });
+
+            // Reset status terjawab
+            quizState.answeredStatus = Array(quizState.questions.length).fill(null);
+
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        // Render Soal
+        function renderQuestion() {
+            const idx = quizState.currentIndex;
+            const qData = quizState.questions[idx];
+            const status = quizState.answeredStatus[idx];
+
+            document.getElementById('question-counter').innerText = `Soal ${idx + 1} dari 25`;
+            document.getElementById('current-score').innerText = quizState.score;
+            document.getElementById('question-text').innerText = qData.q;
+            
+            // Handle Gambar
+            const imgWrapper = document.getElementById('image-wrapper');
+            const imgEl = document.getElementById('question-image');
+            const imgCaption = document.getElementById('image-caption');
+            
+            if (qData.img !== "") {
+                imgEl.src = qData.img;
+                imgCaption.innerText = qData.alt;
+                imgWrapper.classList.remove('hidden');
+            } else {
+                imgWrapper.classList.add('hidden');
+            }
+
+            // Handle Pilihan Jawaban
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            qData.options.forEach((opt, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = String.fromCharCode(65 + optIdx) + ". " + opt.t;
+                
+                if (status) {
+                    btn.disabled = true;
+                    if (opt.c) btn.classList.add('correct');
+                    if (!opt.c && status.selectedIndex === optIdx) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => selectOption(optIdx, opt.c);
+                }
+                optionsGrid.appendChild(btn);
+            });
+
+            // Handle Pembahasan
+            const boxPembahasan = document.getElementById('pembahasan');
+            if (status) {
+                document.getElementById('pembahasan-text').innerText = qData.pembahasan;
+                boxPembahasan.style.display = 'block';
+            } else {
+                boxPembahasan.style.display = 'none';
+            }
+
+            // Handle Navigasi Tombol
+            document.getElementById('btn-prev').classList.toggle('hidden', idx === 0);
+            
+            const btnNext = document.getElementById('btn-next');
+            const btnFinish = document.getElementById('btn-finish');
+            
+            if (idx === quizState.questions.length - 1) {
+                btnNext.classList.add('hidden');
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        // Pilih Jawaban
+        function selectOption(selectedIndex, isCorrect) {
+            const idx = quizState.currentIndex;
+            quizState.answeredStatus[idx] = { answered: true, selectedIndex: selectedIndex };
+
+            if (isCorrect) {
+                // Bobot 4 poin per soal (total 100)
+                quizState.score += 4; 
+            }
+
+            renderQuestion(); // Render ulang untuk tampilkan warna & pembahasan
+        }
+
+        function nextQuestion() {
+            if (quizState.currentIndex < quizState.questions.length - 1) {
+                quizState.currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (quizState.currentIndex > 0) {
+                quizState.currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Selesai Kuis
+        function finishQuiz() {
+            if(confirm('Apakah kamu yakin ingin menyelesaikan kuis ini?')) {
+                // Simpan Riwayat
+                const historyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                const now = new Date();
+                historyData.push({
+                    name: quizState.studentName,
+                    class: quizState.studentClass,
+                    score: quizState.score,
+                    time: now.toLocaleString('id-ID')
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
+
+                // Tampil Hasil
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+                document.getElementById('result-nama').innerText = quizState.studentName;
+                document.getElementById('result-kelas').innerText = quizState.studentClass;
+                document.getElementById('final-score').innerText = quizState.score;
+            }
+        }
+    </script>
+</body>
+</html>

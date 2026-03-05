@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis PJOK-STS-K5-S2-HOTS</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #f44336;
+            --dark-bg: #1a1a1a;
+            --text-light: #ffffff;
+            --accent-color: #ffeb3b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #ffecb3 100%);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Anti copy-paste  */
+        }
+
+        /* Header  */
+        .header {
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            color: #333;
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .container {
+            flex: 1;
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* Login Screen  */
+        #login-screen { display: block; }
+        #quiz-screen { display: none; }
+
+        input[type="text"], select {
+            width: 80%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-start { background-color: var(--primary-color); color: white; }
+        .btn-home { background-color: #2196F3; color: white; }
+        .btn-next { background-color: #ff9800; color: white; }
+
+        /* Quiz UI */
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 8px 0;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+
+        .correct { background-color: var(--primary-color) !important; color: white; }
+        .wrong { background-color: var(--secondary-color) !important; color: white; }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .explanation {
+            background: #e7f3fe;
+            padding: 10px;
+            border-left: 5px solid #2196F3;
+            margin-top: 15px;
+            display: none;
+            text-align: left;
+        }
+
+        /* History Table  */
+        .history-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        /* Footer  */
+        footer {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8em;
+        }
+        footer a { color: var(--accent-color); text-decoration: none; }
+
+    </style>
+</head>
+<body oncontextmenu="return false;"> <div class="header">
+        KODE SOAL: PJOK-STS-K5-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div id="login-screen">
+            <h2 style="color: var(--primary-color);">Selamat Datang!</h2>
+            <p>Silakan isi data diri Anda</p>
+            <input type="text" id="userName" placeholder="Nama Lengkap" required><br>
+            <select id="userClass">
+                <option value="">Pilih Kelas</option>
+                <option value="5A">Kelas 5A</option>
+                <option value="5B">Kelas 5B</option>
+                <option value="5C">Kelas 5C</option>
+            </select><br>
+            <button class="btn-start" onclick="startQuiz()">Mulai Kuis</button>
+            <br>
+            <a href="../index.html"><button class="btn-home">Kembali ke Home</button></a>
+            
+            <div id="history-section">
+                <h3>Riwayat Skor</h3>
+                <table class="history-table" id="history-list">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Skor</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div id="score-display" style="font-weight: bold; margin-bottom: 10px;">Skor: 0</div>
+            <div id="question-container">
+                <div id="image-box" class="img-container"></div>
+                <h3 id="question-text"></h3>
+                <div id="options-container"></div>
+                <div id="explanation-box" class="explanation"></div>
+            </div>
+            <div style="margin-top: 20px;">
+                <button id="prev-btn" onclick="prevQuestion()" style="display:none;">Sebelumnya</button>
+                <button id="next-btn" class="btn-next" onclick="nextQuestion()" style="display:none;">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span id="copyright"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui 
+        <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        // Data Soal (25 Soal berdasarkan kisi-kisi) [cite: 3, 12, 13, 14, 15]
+        const questions = [
+            {
+                text: "Gerakan melangkah yang diiringi dengan irama musik atau ketukan disebut sebagai...",
+                options: ["Gerak berirama", "Gerak bertenaga", "Gerak bersepeda", "Gerak beraturan"],
+                correct: 0,
+                explanation: "Gerak berirama adalah rangkaian gerak manusia yang dilakukan dalam ikatan pola irama, disesuaikan dengan perubahan tempo, atau semata-mata ekspresi tubuh mengikuti iringan musik.",
+                image: "" 
+            },
+            {
+                text: "Perhatikan gambar tersebut. Gerakan langkah kaki yang ditunjukkan adalah...",
+                options: ["Langkah biasa", "Langkah rapat", "Langkah depan", "Langkah silang"],
+                correct: 1,
+                explanation: "Langkah rapat (bijtrekpas) dilakukan dengan posisi kaki yang saling mendekat mengikuti irama.",
+                image: "gambar/soal2.jpg", // Jalur input gambar untuk diedit offline 
+                imgDesc: "Siswa melakukan gerakan langkah rapat"
+            },
+            {
+                text: "Apa fungsi utama musik atau ketukan dalam aktivitas gerak berirama?",
+                options: ["Pengiring gerak", "Penghias suara", "Pemberi semangat", "Penentu durasi"],
+                correct: 0,
+                explanation: "Musik dalam gerak berirama berfungsi sebagai panduan irama dan pemberi tempo bagi setiap gerakan.",
+                image: ""
+            },
+            {
+                text: "Berdasarkan gambar, posisi ayunan lengan yang benar saat melakukan gerakan adalah...",
+                options: ["Lurus ke depan", "Samping telinga", "Depan dan belakang", "Putar ke atas"],
+                correct: 2,
+                explanation: "Ayunan lengan umumnya dilakukan secara bergantian ke depan dan belakang untuk menjaga keseimbangan.",
+                image: "gambar/soal4.jpg",
+                imgDesc: "Posisi ayunan lengan"
+            },
+            {
+                text: "Pada renang gaya dada, gerakan kaki yang benar menyerupai gerakan hewan...",
+                options: ["Kaki katak", "Kaki bebek", "Ekor ikan", "Kaki kuda"],
+                correct: 0,
+                explanation: "Renang gaya dada sering disebut gaya katak karena gerakan kakinya yang menekuk dan menendang keluar.",
+                image: "gambar/soal5.jpg",
+                imgDesc: "Gerakan kaki renang gaya dada"
+            },
+            {
+        // Soal 1: L1 - Gerak Berirama (Bergambar)
+        text: "Perhatikan gambar di bawah ini! Gerakan melangkah yang selalu diiringi dengan irama musik atau ketukan secara teratur disebut sebagai aktivitas apa?",
+        options: ["Gerakan senam irama", "Gerakan senam lantai", "Gerakan senam militer", "Gerakan senam aerobik"],
+        correct: 0,
+        explanation: "Gerak berirama atau senam irama adalah rangkaian gerak yang selalu mengikuti pola irama atau ketukan secara teratur.",
+        image: "gambar/soal1.jpg", 
+        imgDesc: "Siswa melakukan senam irama bersama"
+    },
+    {
+        // Soal 2: L2 - Gerak Berirama
+        text: "Saat Siti melakukan gerak berirama, ia merapatkan kedua kakinya mengikuti tempo lagu. Gerakan langkah yang sedang dilakukan oleh Siti tersebut dinamakan langkah apa?",
+        options: ["Langkah kaki biasa", "Langkah kaki rapat", "Langkah kaki depan", "Langkah kaki silang"],
+        correct: 1,
+        explanation: "Langkah rapat (bijtrekpas) dilakukan dengan posisi kaki yang saling merapat pada akhir gerakan melangkah.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 3: L1 - Gerak Berirama
+        text: "Dalam senam irama, ketukan atau musik memiliki peran yang sangat penting. Apa fungsi utama dari penggunaan musik dalam aktivitas gerak berirama tersebut?",
+        options: ["Pengatur tempo gerakan", "Penambah durasi gerakan", "Penghias arena gerakan", "Pembangkit emosi gerakan"],
+        correct: 0,
+        explanation: "Musik dalam gerak berirama berfungsi utama sebagai panduan irama dan pengatur tempo bagi setiap gerakan.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 4: L2 - Gerak Berirama (Bergambar)
+        text: "Perhatikan gambar ayunan lengan berikut! Saat melakukan senam irama, tangan mengayun secara harmonis. Ayunan lengan ini pada dasarnya berfungsi sebagai...",
+        options: ["Penjaga keseimbangan tubuh", "Penambah kekuatan otot", "Pelentur sendi tangan", "Pengatur napas dada"],
+        correct: 0,
+        explanation: "Selain nilai keindahan, ayunan lengan berfungsi utama untuk menjaga keseimbangan tubuh saat kaki melangkah.",
+        image: "gambar/soal4.jpg", 
+        imgDesc: "Posisi ayunan lengan sejajar bahu"
+    },
+    {
+        // Soal 5: L2 - Olahraga Air (Bergambar)
+        text: "Perhatikan gambar teknik renang ini! Gerakan kaki menendang ke arah luar secara bersamaan menyerupai gerakan katak. Gerakan ini merupakan teknik dasar dari...",
+        options: ["Renang gaya bebas", "Renang gaya dada", "Renang gaya punggung", "Renang gaya kupu"],
+        correct: 1,
+        explanation: "Renang gaya dada sering disebut gaya katak karena gerakan menendang kakinya yang menyerupai katak saat berenang.",
+        image: "gambar/soal5.jpg", 
+        imgDesc: "Gerakan kaki renang gaya dada"
+    },
+    {
+        // Soal 6: L1 - Olahraga Air
+        text: "Budi sedang belajar berenang. Ia berenang dengan posisi dada menghadap permukaan air dan selalu menggerakkan kedua tangan menyamping. Budi sedang berlatih...",
+        options: ["Renang gaya katak", "Renang gaya bebas", "Renang gaya lumba", "Renang gaya anjing"],
+        correct: 0,
+        explanation: "Gaya dada atau gaya katak dilakukan dengan posisi dada menghadap air dan tangan mendayung ke arah samping.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 7: L2 - Olahraga Air
+        text: "Untuk bisa berenang gaya dada dengan cepat, perenang harus menguasai dorongan kaki. Sikap awal kedua kaki sebelum menendang atau mendorong air adalah...",
+        options: ["Lurus rapat sejajar", "Ditekuk ke samping", "Ditarik ke depan", "Diangkat ke atas"],
+        correct: 1,
+        explanation: "Sikap awal dorongan kaki pada gaya dada adalah dengan menekuk kedua lutut dan membuka telapak kaki ke arah luar.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 8: L2 - Olahraga Air (Bergambar)
+        text: "Perhatikan gambar perenang berikut! Setelah melakukan dorongan kaki, perenang meluncur lurus ke depan. Apa teknik dasar yang sedang diterapkan pada posisi tersebut?",
+        options: ["Teknik dasar luncuran", "Teknik dasar pernapasan", "Teknik dasar ayunan", "Teknik dasar loncatan"],
+        correct: 0,
+        explanation: "Meluncur (streamline) adalah posisi di mana tubuh lurus melesat ke depan setelah mendapat dorongan.",
+        image: "gambar/soal8.jpg", 
+        imgDesc: "Posisi meluncur renang gaya dada"
+    },
+    {
+        // Soal 9: L3 - Gerak Berirama
+        text: "Dalam senam, Rina melangkah ke depan dengan kaki kanan, disusul kaki kiri, lalu kembali merapat. Rangkaian analisis gerakan ini menunjukkan aplikasi dari...",
+        options: ["Langkah kaki biasa", "Langkah kaki rapat", "Langkah kaki ganti", "Langkah kaki silang"],
+        correct: 1,
+        explanation: "Langkah yang diakhiri dengan kedua kaki saling merapat kembali disebut sebagai langkah rapat (bijtrekpas).",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 10: L3 - Gerak Berirama
+        text: "Andi mengayunkan lengan kanan ke depan sejajar bahu, lalu menariknya kembali sambil mengayunkan lengan kiri. Jenis ayunan lengan apakah yang dipraktikkan Andi?",
+        options: ["Ayunan satu lengan", "Ayunan dua lengan", "Ayunan silang lengan", "Ayunan putar lengan"],
+        correct: 0,
+        explanation: "Gerakan mengayun secara bergantian satu per satu ke depan dan belakang adalah teknik ayunan satu lengan.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 11: L3 - Gerak Berirama
+        text: "Gerak berirama memiliki nilai estetika yang tinggi. Di antara pilihan berikut, manakah yang merupakan unsur dasar yang wajib menyatu dalam senam irama?",
+        options: ["Irama kelenturan kontinuitas", "Kekuatan kecepatan kelincahan", "Daya tahan ketepatan", "Kelincahan kelenturan keseimbangan"],
+        correct: 0,
+        explanation: "Tiga unsur utama dalam senam irama adalah ketepatan irama, kelenturan tubuh, dan kontinuitas (ketersambungan) gerakan.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 12: L3 - Gerak Berirama (Bergambar)
+        text: "Perhatikan gambar senam massal ini! Melakukan aktivitas gerak berirama secara teratur diyakini memberikan dampak positif, salah satunya adalah untuk memelihara...",
+        options: ["Kesehatan jantung paru", "Membesarkan otot perut", "Meninggikan postur tubuh", "Menyembuhkan patah tulang"],
+        correct: 0,
+        explanation: "Senam irama merupakan latihan aerobik yang sangat baik untuk meningkatkan dan menjaga kesehatan sistem kardiovaskular (jantung dan paru).",
+        image: "gambar/soal12.jpg", 
+        imgDesc: "Sekelompok siswa melakukan senam kesehatan"
+    },
+    {
+        // Soal 13: L3 - Gerak Berirama
+        text: "Pada pelajaran PJOK, guru memberikan instruksi untuk mempraktikkan gerakan 'galoppas'. Nama lain dari istilah langkah kaki yang diinstruksikan oleh guru adalah...",
+        options: ["Langkah kaki depan", "Langkah kaki silang", "Langkah kaki rapat", "Langkah kaki biasa"],
+        correct: 0,
+        explanation: "Galoppas adalah istilah asing untuk langkah depan dalam aktivitas gerak berirama.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 14: L3 - Olahraga Air
+        text: "Saat melakukan gerakan meluncur, posisi tubuh harus aerodinamis untuk meminimalkan hambatan air. Bagaimana analisis posisi badan yang paling ideal saat meluncur?",
+        options: ["Sejajar permukaan air", "Tegak lurus air", "Menukik dasar kolam", "Miring permukaan air"],
+        correct: 0,
+        explanation: "Posisi sejajar permukaan air (streamline) akan membuat tubuh membelah air dengan lebih mudah tanpa hambatan besar.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 15: L3 - Olahraga Air
+        text: "Latihan mengayunkan atau menendang tungkai pada renang gaya dada seringkali membutuhkan alat bantu di awal. Alat bantu yang paling efektif digunakan adalah...",
+        options: ["Papan luncur renang", "Kacamata anti air", "Pelampung lengan tangan", "Topi kepala renang"],
+        correct: 0,
+        explanation: "Papan luncur (kickboard) digunakan untuk menahan tubuh bagian depan agar siswa bisa fokus melatih gerakan kaki.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 16: L3 - Olahraga Air
+        text: "Pengambilan napas gaya dada dilakukan di waktu yang spesifik agar air tidak terhirup. Kapan momentum yang paling aman untuk menghirup oksigen?",
+        options: ["Saat kepala diangkat", "Saat kepala menyelam", "Saat kaki menendang", "Saat tubuh meluncur"],
+        correct: 0,
+        explanation: "Napas diambil dari mulut saat kedua tangan ditarik ke belakang dan kepala terangkat di atas permukaan air.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 17: L3 - Olahraga Air
+        text: "Berenang memaksa seluruh kelompok otot tubuh bekerja keras menahan beban air. Analisis ini membuktikan bahwa olahraga renang sangat efektif untuk melatih...",
+        options: ["Daya tahan tubuh", "Kapasitas rongga dada", "Kekuatan otot tangan", "Kelenturan tulang belakang"],
+        correct: 0,
+        explanation: "Renang melatih kekuatan otot secara menyeluruh sekaligus meningkatkan sistem kardio, sehingga daya tahan tubuh meningkat drastis.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 18: L3 - Olahraga Air
+        text: "Fasilitas kolam renang umum memiliki berbagai aturan untuk meminimalkan kecelakaan. Tindakan preventif mana yang wajib dipatuhi pengunjung sebelum masuk ke air?",
+        options: ["Memakai pakaian renang", "Membawa makanan minuman", "Berlari pinggir kolam", "Membuang sampah sembarangan"],
+        correct: 0,
+        explanation: "Memakai pakaian renang yang tepat memudahkan pergerakan di air dan mencegah material pakaian biasa menyumbat filter kolam.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 19: L2 - Gerak Berirama
+        text: "Gerakan fisik yang sengaja dipadukan dengan alunan musik, tepukan, atau hitungan suara bertujuan mendefinisikan pemahaman dasar mengenai...",
+        options: ["Hakikat senam irama", "Hakikat senam lantai", "Hakikat senam kebugaran", "Hakikat senam militer"],
+        correct: 0,
+        explanation: "Penggabungan gerakan fisik dengan elemen irama pengiring merupakan definisi mendasar dari hakikat gerak berirama.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 20: L2 - Gerak Berirama
+        text: "Agar pertunjukan senam terlihat mengalir tanpa patah-patah, pesenam harus menguasai salah satu unsur penting. Unsur gerak yang tidak terputus tersebut dinamakan...",
+        options: ["Kontinuitas gerakan tubuh", "Kelenturan sendi tubuh", "Kecepatan respons tubuh", "Keseimbangan postur tubuh"],
+        correct: 0,
+        explanation: "Kontinuitas adalah rangkaian gerakan senam yang bersambung dan tidak terputus dari satu gerakan ke gerakan lainnya.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 21: L2 - Gerak Berirama
+        text: "Guru selalu mewajibkan siswa melakukan peregangan sebelum memutar musik inti. Manfaat utama dan paling vital dari tahapan pemanasan ini adalah untuk...",
+        options: ["Mencegah cedera otot", "Mengeluarkan banyak keringat", "Menghemat tenaga tubuh", "Menurunkan suhu tubuh"],
+        correct: 0,
+        explanation: "Pemanasan menyiapkan otot, meningkatkan suhu tubuh, dan melancarkan aliran darah agar terhindar dari kram atau cedera.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 22: L2 - Olahraga Air
+        text: "Tangan mendayung ke arah samping bawah lalu diluruskan kembali ke depan. Rangkaian deskriptif ini menjelaskan tentang teknik dasar renang pada bagian...",
+        options: ["Gerakan tarikan lengan", "Gerakan dorongan kaki", "Gerakan ayunan pinggul", "Gerakan pengambilan napas"],
+        correct: 0,
+        explanation: "Gerakan menarik air dengan tangan ke arah dada lalu meluruskannya adalah inti dari teknik tarikan lengan gaya dada.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 23: L2 - Olahraga Air
+        text: "Selain menjaga kebugaran, berenang sangat krusial jika terjadi kondisi darurat di wilayah perairan. Oleh karena itu, renang dikategorikan sebagai salah satu...",
+        options: ["Keterampilan bertahan hidup", "Keterampilan gaya bebas", "Keterampilan loncat indah", "Keterampilan selam dangkal"],
+        correct: 0,
+        explanation: "Berenang adalah kemampuan survival (bertahan hidup) dasar yang sangat berguna untuk menyelamatkan diri sendiri atau orang lain di air.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 24: L2 - Olahraga Air
+        text: "Untuk mencapai kecepatan luncuran yang maksimal tanpa membuang banyak tenaga, bagaimana sikap akhir kedua lengan yang benar sesaat setelah kaki menendang?",
+        options: ["Lurus ke depan", "Ditekuk ke samping", "Ditarik ke belakang", "Dibuka lebar lebar"],
+        correct: 0,
+        explanation: "Lengan harus lurus merapat di depan kepala agar tubuh menjadi hidrodinamis (streamline) saat meluncur.",
+        image: "", 
+        imgDesc: ""
+    },
+    {
+        // Soal 25: L2 - Olahraga Air
+        text: "Area sekitar kolam renang biasanya licin akibat genangan air. Berdasarkan kondisi tersebut, tindakan berbahaya apakah yang paling harus dihindari oleh siswa?",
+        options: ["Saling dorong teman", "Latihan gaya dada", "Memakai kacamata renang", "Mengikuti arahan guru"],
+        correct: 0,
+        explanation: "Bercanda kasar seperti saling dorong di area kolam sangat berbahaya karena risiko terpeleset dan cedera kepala sangat tinggi.",
+        image: "", 
+        imgDesc: ""
+    }
+            // Tambahkan soal 6-25 di sini sesuai kisi-kisi...
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let shuffledQuestions = [];
+        let userName = "";
+        let userClass = "";
+
+        // Tahun otomatis 
+        document.getElementById('copyright').innerText = `@${new Date().getFullYear()}`;
+
+        // Inisialisasi Riwayat Skor agar tidak bentrok (Key Spesifik) 
+        const STORAGE_KEY = 'PJOK_STS_K5_S2_HISTORY';
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const tbody = document.querySelector('#history-list tbody');
+            tbody.innerHTML = '';
+            history.forEach(item => {
+                const row = `<tr><td>${item.name}</td><td>${item.class}</td><td>${item.score}</td><td>${item.time}</td></tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        window.onload = loadHistory;
+
+        function startQuiz() {
+            userName = document.getElementById('userName').value;
+            userClass = document.getElementById('userClass').value;
+
+            if (!userName || !userClass) {
+                alert("Mohon isi Nama dan Kelas!");
+                return;
+            }
+
+            // Acak soal 
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5).slice(0, 25);
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = shuffledQuestions[currentQuestionIndex];
+            const container = document.getElementById('options-container');
+            const imgBox = document.getElementById('image-box');
+            
+            document.getElementById('question-text').innerText = `${currentQuestionIndex + 1}. ${q.text}`;
+            imgBox.innerHTML = q.image ? `<img src="${q.image}" alt="${q.imgDesc}"><p><small>${q.imgDesc}</small></p>` : '';
+            container.innerHTML = '';
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+
+            // Acak pilihan jawaban 
+            let options = q.options.map((opt, index) => ({ text: opt, index }));
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.innerText = opt.text;
+                btn.className = 'option-btn';
+                btn.onclick = () => checkAnswer(btn, opt.index, q.correct, q.explanation);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, selected, correct, expl) {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score += 4; // 25 soal x 4 = 100
+            } else {
+                btn.classList.add('wrong');
+                buttons[correct].classList.add('correct');
+            }
+
+            document.getElementById('score-display').innerText = `Skor: ${score}`;
+            const explBox = document.getElementById('explanation-box');
+            explBox.innerHTML = `<strong>Pembahasan:</strong><br>${expl}`;
+            explBox.style.display = 'block';
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            const now = new Date();
+            const timeStr = `${now.toLocaleDateString()} ${now.getHours()}:${now.getMinutes()}`;
+            
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            history.push({ name: userName, class: userClass, score: score, time: timeStr });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            alert(`Kuis Selesai! Skor Akhir Anda: ${score}`);
+            location.reload(); // Kembali ke login
+        }
+
+    </script>
+</body>
+</html>

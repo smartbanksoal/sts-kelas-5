@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IPAS Kelas 5 - Sumatif Tengah Semester</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #1A1A1A;
+            --light: #F7FFF7;
+            --correct: #2ECC71;
+            --wrong: #E74C3C;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Proteksi Anti Copy-Paste */
+        body {
+            background-color: var(--light);
+            color: #333;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 95%;
+        }
+
+        /* Screen States */
+        #quiz-screen, #result-screen {
+            display: none;
+        }
+
+        /* Login Screen */
+        .login-box {
+            text-align: center;
+        }
+        .login-box h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .login-box p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: 80%;
+            padding: 15px;
+            border: 2px solid var(--secondary);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(255,107,107,0.3);
+        }
+        
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 80%;
+            margin-bottom: 15px;
+        }
+        .btn:hover {
+            background: #3db8b0;
+            transform: translateY(-3px);
+        }
+        .btn-home {
+            background: var(--accent);
+            color: var(--dark);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-home:hover {
+            background: #e5cf5c;
+        }
+
+        /* Score History */
+        .history-box {
+            margin-top: 30px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #ddd;
+        }
+        .history-box h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        .history-list {
+            list-style: none;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Quiz UI */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        .live-score {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--secondary);
+            background: #f0fbfb;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .option-correct {
+            background: var(--correct) !important;
+            color: white;
+            border-color: var(--correct) !important;
+        }
+        .option-wrong {
+            background: var(--wrong) !important;
+            color: white;
+            border-color: var(--wrong) !important;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-left: 5px solid var(--secondary);
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .btn-nav {
+            width: 48%;
+            background: var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body oncopy="return false" oncut="return false" onpaste="return false">
+
+    <div class="header">
+        KODE SOAL: IPAS-STS-K5-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div id="login-screen" class="login-box">
+            <h1>🌟 Kuis Cerdas IPAS 🌟</h1>
+            <p>Sumatif Tengah Semester - Kelas 5 Kurikulum Merdeka</p>
+            
+            <div class="input-group">
+                <input type="text" id="student-name" placeholder="Masukkan Nama Lengkap" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="text" id="student-class" placeholder="Masukkan Kelas (Misal: 5A)" autocomplete="off">
+            </div>
+            
+            <button class="btn" onclick="startQuiz()">Mulai Kerjakan Kuis</button>
+            <br>
+            <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+
+            <div class="history-box">
+                <h3>🏆 Riwayat Skor Pencapaian</h3>
+                <ul class="history-list" id="history-list">
+                    </ul>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <div>Soal: <span id="current-q-num">1</span> / 25</div>
+                <div class="live-score">Skor: <span id="live-score">0</span></div>
+            </div>
+            
+            <img id="q-image" class="question-image" src="" alt="Gambar Soal">
+            
+            <div class="question-text" id="question-text">Memuat pertanyaan...</div>
+            
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div class="explanation-box" id="explanation-box">
+                <strong>Pembahasan:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()" style="visibility: hidden;">&laquo; Sebelumnya</button>
+                <button class="btn btn-nav" id="btn-next" onclick="nextQuestion()" style="display: none;">Selanjutnya &raquo;</button>
+                <button class="btn btn-nav" id="btn-finish" onclick="finishQuiz()" style="display: none; background: var(--correct);">Selesaikan Kuis &raquo;</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="login-box">
+            <h1>🎉 Kuis Selesai! 🎉</h1>
+            <p id="result-text" style="font-size: 1.2rem;"></p>
+            <h2 style="font-size: 4rem; color: var(--primary); margin: 20px 0;" id="final-score">100</h2>
+            <button class="btn" onclick="location.reload()">Kembali ke Halaman Awal</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy;<span id="current-year"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </div>
+
+    <script>
+        // Keamanan: Mencegah Klik Kanan (View Source)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Tahun Otomatis di Footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Database Soal (25 Soal, 5 Bergambar, Opsi seimbang, HOTS)
+        const bankSoal = [
+            {
+                // Soal Bergambar 1
+                q: "Perhatikan gambar sistem pernapasan berikut! Jika bagian yang ditunjuk huruf X mengalami gangguan, proses yang akan terhambat adalah...",
+                img: "./gambar/soal-pernapasan.jpg", // Jalur input gambar 1
+                alt: "Gambar diagram sistem pernapasan manusia menunjuk alveolus",
+                options: [
+                    { text: "Penyerapan oksigen ke dalam darah", isCorrect: true },
+                    { text: "Penyaringan debu pada udara masuk", isCorrect: false },
+                    { text: "Pengaturan suhu pada udara pernapasan", isCorrect: false },
+                    { text: "Pelepasan karbon dioksida ke luar", isCorrect: false }
+                ],
+                explanation: "Huruf X merujuk pada Alveolus, yang berfungsi utama sebagai tempat pertukaran oksigen dengan pembuluh darah."
+            },
+            {
+                q: "Mengapa tubuh kita sangat membutuhkan asupan makanan dan minuman bergizi setiap hari?",
+                img: "", alt: "",
+                options: [
+                    { text: "Untuk menghasilkan energi dan mengganti sel rusak", isCorrect: true },
+                    { text: "Untuk mencegah rasa lapar dan haus berlebihan", isCorrect: false },
+                    { text: "Untuk mempercepat proses pernapasan di paru-paru", isCorrect: false },
+                    { text: "Untuk mengurangi jumlah cairan di dalam tubuh", isCorrect: false }
+                ],
+                explanation: "Makanan dan minuman diolah menjadi nutrisi untuk memproduksi energi, mengatur metabolisme, dan meregenerasi sel."
+            },
+            {
+                // Soal Bergambar 2
+                q: "Perhatikan gambar tahapan pertumbuhan manusia berikut! Karakteristik utama yang terjadi pada fase yang ditunjukkan oleh nomor 3 adalah...",
+                img: "./gambar/soal-pertumbuhan.jpg", // Jalur input gambar 2
+                alt: "Gambar siklus pertumbuhan manusia dari bayi hingga lansia",
+                options: [
+                    { text: "Mengalami masa pubertas dan perubahan fisik pesat", isCorrect: true },
+                    { text: "Mulai bisa berjalan dan mengucapkan beberapa kata", isCorrect: false },
+                    { text: "Penurunan fungsi organ dan kekuatan fisik tubuh", isCorrect: false },
+                    { text: "Gigi susu mulai tanggal dan diganti permanen", isCorrect: false }
+                ],
+                explanation: "Fase nomor 3 adalah masa remaja, di mana terjadi lonjakan hormon pubertas yang memicu perubahan fisik secara drastis."
+            },
+            {
+                q: "Seorang anak mengalami peningkatan tinggi badan yang sangat pesat. Hal ini menunjukkan ciri pertumbuhan pada fase...",
+                img: "", alt: "",
+                options: [
+                    { text: "Masa remaja yang mengalami banyak perubahan hormon", isCorrect: true },
+                    { text: "Masa bayi yang sangat membutuhkan banyak air susu", isCorrect: false },
+                    { text: "Masa dewasa yang memiliki kestabilan emosi tinggi", isCorrect: false },
+                    { text: "Masa lansia yang mengalami penurunan massa otot", isCorrect: false }
+                ],
+                explanation: "Pertumbuhan paling pesat (growth spurt) terjadi pada masa remaja berkat produksi hormon pertumbuhan."
+            },
+            {
+                q: "Indonesia berada di antara Benua Asia dan Benua Australia. Dampak positif dari letak geografis ini adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Menjadi jalur perdagangan internasional yang sangat strategis", isCorrect: true },
+                    { text: "Memiliki iklim subtropis dengan empat musim berbeda", isCorrect: false },
+                    { text: "Terhindar dari berbagai ancaman bencana alam bumi", isCorrect: false },
+                    { text: "Memiliki satu zona waktu yang sama semuanya", isCorrect: false }
+                ],
+                explanation: "Letak silang (cross position) membuat posisi Indonesia sangat strategis sebagai jalur pelayaran lalu lintas dunia."
+            },
+            {
+                // Soal Bergambar 3
+                q: "Perhatikan gambar hewan endemik berikut! Hewan ini memiliki ciri khas dan habitat aslinya berada di pulau...",
+                img: "./gambar/soal-fauna.jpg", // Jalur input gambar 3
+                alt: "Gambar hewan endemik Anoa/Babi Rusa dari Sulawesi",
+                options: [
+                    { text: "Pulau Sulawesi yang berada di zona tipe peralihan", isCorrect: true },
+                    { text: "Pulau Sumatra yang memiliki hutan hujan tropis", isCorrect: false },
+                    { text: "Pulau Papua yang memiliki banyak fauna australis", isCorrect: false },
+                    { text: "Pulau Jawa yang merupakan pusat dari pemerintahan", isCorrect: false }
+                ],
+                explanation: "Hewan tersebut adalah endemik Sulawesi (tipe peralihan/Wallace) yang tidak ditemukan di daerah lain."
+            },
+            {
+                q: "Tanaman kina banyak dibudidayakan di daerah pegunungan. Pemanfaatan utama dari sumber daya alam ini adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Bahan baku utama pembuatan obat penyakit malaria", isCorrect: true },
+                    { text: "Bahan dasar untuk membuat minuman kesehatan instan", isCorrect: false },
+                    { text: "Bumbu dapur untuk menyedapkan berbagai jenis masakan", isCorrect: false },
+                    { text: "Pewarna alami untuk industri tekstil dan pakaian", isCorrect: false }
+                ],
+                explanation: "Ekstrak kulit batang pohon kina menghasilkan zat yang secara medis digunakan sebagai obat malaria."
+            },
+            {
+                q: "Minyak bumi dan batu bara tidak dapat diperbarui. Mengapa kedua sumber daya alam tersebut digolongkan demikian?",
+                img: "", alt: "",
+                options: [
+                    { text: "Karena proses pembentukannya membutuhkan waktu jutaan tahun", isCorrect: true },
+                    { text: "Karena jumlahnya sangat melimpah di dalam bumi", isCorrect: false },
+                    { text: "Karena mudah ditemukan di seluruh wilayah nusantara", isCorrect: false },
+                    { text: "Karena harganya sangat murah dan mudah didapatkan", isCorrect: false }
+                ],
+                explanation: "Fosil pembentuk minyak dan batu bara butuh waktu proses geologis jutaan tahun sehingga tidak bisa cepat diperbarui."
+            },
+            {
+                q: "Saat kita menarik napas dalam-dalam, apa yang terjadi pada rongga dada dan diafragma di dalam tubuh?",
+                img: "", alt: "",
+                options: [
+                    { text: "Rongga dada membesar dan otot diafragma mendatar", isCorrect: true },
+                    { text: "Rongga dada mengecil dan otot diafragma melengkung", isCorrect: false },
+                    { text: "Rongga dada membesar dan otot diafragma melengkung", isCorrect: false },
+                    { text: "Rongga dada mengecil dan otot diafragma mendatar", isCorrect: false }
+                ],
+                explanation: "Pada proses inspirasi, otot diafragma berkontraksi (mendatar), sehingga volume rongga dada ikut membesar."
+            },
+            {
+                q: "Sering terpapar asap rokok dapat merusak alveolus. Dampak jangka panjang dari kondisi ini bagi kesehatan adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Tubuh akan kekurangan suplai oksigen yang penting", isCorrect: true },
+                    { text: "Saluran pencernaan akan mengalami gangguan yang serius", isCorrect: false },
+                    { text: "Detak jantung akan menjadi lebih lambat terus", isCorrect: false },
+                    { text: "Proses penyerapan sari makanan menjadi sangat terhambat", isCorrect: false }
+                ],
+                explanation: "Kerusakan alveolus menghambat pertukaran gas, sehingga suplai oksigen ke seluruh sel tubuh akan berkurang."
+            },
+            {
+                // Soal Bergambar 4
+                q: "Perhatikan gambar piramida makanan berikut! Makanan yang berada di tingkat paling bawah berfungsi utama untuk...",
+                img: "./gambar/soal-nutrisi.jpg", // Jalur input gambar 4
+                alt: "Gambar piramida makanan menunjuk area karbohidrat",
+                options: [
+                    { text: "Memberikan energi yang dibutuhkan untuk beraktivitas fisik", isCorrect: true },
+                    { text: "Membangun sel-sel tubuh yang baru dan rusak", isCorrect: false },
+                    { text: "Melindungi tubuh dari serangan berbagai macam penyakit", isCorrect: false },
+                    { text: "Melarutkan vitamin dan mengatur suhu tubuh manusia", isCorrect: false }
+                ],
+                explanation: "Dasar piramida gizi adalah karbohidrat pokok (nasi, jagung, umbi) yang berfungsi sebagai sumber energi utama."
+            },
+            {
+                q: "Di dalam lambung terdapat enzim pepsin. Apa fungsi utama dari enzim tersebut dalam proses pencernaan makanan?",
+                img: "", alt: "",
+                options: [
+                    { text: "Memecah protein menjadi pepton yang lebih kecil", isCorrect: true },
+                    { text: "Mengubah zat tepung menjadi zat gula sederhana", isCorrect: false },
+                    { text: "Mengendapkan protein susu dari air susu ibu", isCorrect: false },
+                    { text: "Membunuh kuman penyakit yang masuk bersama makanan", isCorrect: false }
+                ],
+                explanation: "Enzim pepsin di lambung bertugas mengubah protein kompleks menjadi bentuk peptida/pepton yang lebih sederhana."
+            },
+            {
+                q: "Untuk menjaga pertumbuhan tulang yang sehat, kebiasaan apa yang paling tepat untuk dilakukan setiap hari olehmu?",
+                img: "", alt: "",
+                options: [
+                    { text: "Mengonsumsi makanan tinggi kalsium dan rutin berolahraga", isCorrect: true },
+                    { text: "Tidur sepanjang hari agar tubuh bisa beristirahat", isCorrect: false },
+                    { text: "Menghindari paparan sinar matahari pagi secara langsung", isCorrect: false },
+                    { text: "Membaca buku dengan jarak yang sangat dekat", isCorrect: false }
+                ],
+                explanation: "Tulang membutuhkan nutrisi kalsium, vitamin D (dari sinar matahari pagi), serta tekanan fisik dari olahraga."
+            },
+            {
+                q: "Batas sebelah utara negara Indonesia yang berbatasan langsung dengan wilayah daratan negara tetangga kita adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Negara Malaysia yang berada di Pulau Kalimantan", isCorrect: true },
+                    { text: "Negara Papua Nugini yang berada di timur", isCorrect: false },
+                    { text: "Negara Timor Leste yang berada di selatan", isCorrect: false },
+                    { text: "Samudra Hindia yang berada di sebelah barat", isCorrect: false }
+                ],
+                explanation: "Secara geografis daratan, batas Utara Indonesia berbatasan langsung dengan Malaysia (Sabah/Sarawak) di Kalimantan."
+            },
+            {
+                q: "Fauna di Indonesia bagian barat memiliki kemiripan dengan fauna di Benua Asia. Contoh dari fauna tersebut adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Harimau, gajah, badak, dan juga orang utan", isCorrect: true },
+                    { text: "Komodo, anoa, babi rusa, dan burung maleo", isCorrect: false },
+                    { text: "Burung cenderawasih, kasuari, kangguru, dan juga walabi", isCorrect: false },
+                    { text: "Burung merak, jalak bali, elang, dan nuri", isCorrect: false }
+                ],
+                explanation: "Fauna Asiatis dicirikan oleh mamalia besar seperti harimau sumatera, gajah, dan badak bercula satu."
+            },
+            {
+                q: "Ciri khas fauna tipe Australis yang banyak ditemukan di wilayah Indonesia bagian timur adalah memiliki...",
+                img: "", alt: "",
+                options: [
+                    { text: "Hewan berkantung dan burung dengan bulu indah", isCorrect: true },
+                    { text: "Mamalia berukuran besar dan banyak jenis kera", isCorrect: false },
+                    { text: "Reptil berukuran besar dan hewan endemik unik", isCorrect: false },
+                    { text: "Berbagai jenis ikan air tawar yang langka", isCorrect: false }
+                ],
+                explanation: "Fauna kawasan timur (Australis) identik dengan hewan mamalia berkantung dan burung berwarna-warni cerah."
+            },
+            {
+                q: "Penduduk pesisir pantai memanfaatkan kekayaan alam laut. Kegiatan ekonomi yang paling cocok dikembangkan di sana adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Penangkapan ikan dan pembuatan tambak garam laut", isCorrect: true },
+                    { text: "Pertanian padi sawah dan perkebunan teh hijau", isCorrect: false },
+                    { text: "Pertambangan batu bara dan juga minyak bumi", isCorrect: false },
+                    { text: "Industri tekstil dan perakitan kendaraan bermotor", isCorrect: false }
+                ],
+                explanation: "Kondisi geografis pantai yang panas dan dekat air asin paling tepat untuk nelayan tambak ikan dan ladang garam."
+            },
+            {
+                q: "Penebangan hutan secara liar dapat memicu bencana tanah longsor. Tindakan bijak untuk mencegahnya adalah dengan melakukan...",
+                img: "", alt: "",
+                options: [
+                    { text: "Penanaman kembali pohon di lahan yang gundul", isCorrect: true },
+                    { text: "Pembakaran lahan untuk membuka areal pertanian baru", isCorrect: false },
+                    { text: "Pembangunan perumahan elit di kawasan lereng gunung", isCorrect: false },
+                    { text: "Perburuan hewan liar untuk keseimbangan ekosistem hutan", isCorrect: false }
+                ],
+                explanation: "Reboisasi (penanaman kembali) berfungsi mengikat struktur tanah dengan akar pohon agar kuat menahan air."
+            },
+            {
+                q: "Penyakit asma ditandai dengan sesak napas. Hal ini disebabkan oleh adanya penyempitan pada saluran pernapasan yaitu...",
+                img: "", alt: "",
+                options: [
+                    { text: "Bronkus yang meradang dan menghasilkan banyak lendir", isCorrect: true },
+                    { text: "Alveolus yang berisi cairan akibat infeksi bakteri", isCorrect: false },
+                    { text: "Faring yang terinfeksi oleh virus influenza mematikan", isCorrect: false },
+                    { text: "Laring yang mengalami pembengkakan karena pita suara", isCorrect: false }
+                ],
+                explanation: "Asma adalah reaksi alergi yang menyebabkan otot bronkus meradang, bengkak, dan menyempit."
+            },
+            {
+                q: "Seseorang sering terlambat makan sehingga lambungnya terasa perih. Gangguan pencernaan yang sedang dialami orang tersebut adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Penyakit maag karena peningkatan asam di lambung", isCorrect: true },
+                    { text: "Penyakit tifus akibat infeksi bakteri pada usus", isCorrect: false },
+                    { text: "Penyakit diare karena penyerapan air yang terganggu", isCorrect: false },
+                    { text: "Penyakit sembelit karena kurang mengonsumsi makanan berserat", isCorrect: false }
+                ],
+                explanation: "Asam lambung (HCl) yang diproduksi saat perut kosong akan mengiritasi dinding lambung dan menyebabkan sakit maag."
+            },
+            {
+                q: "Pada masa pubertas, remaja laki-laki mengalami perubahan fisik. Salah satu tanda perubahan tersebut adalah tumbuhnya...",
+                img: "", alt: "",
+                options: [
+                    { text: "Jakun di leher dan suara menjadi lebih berat", isCorrect: true },
+                    { text: "Pinggul yang membesar dan suara menjadi nyaring", isCorrect: false },
+                    { text: "Gigi taring yang kuat untuk merobek makanan", isCorrect: false },
+                    { text: "Rambut memutih dan kulit menjadi sangat keriput", isCorrect: false }
+                ],
+                explanation: "Ciri kelamin sekunder pria saat masa remaja adalah tumbuh jakun, kumis, dan suara menjadi membesar/berat."
+            },
+            {
+                // Soal Bergambar 5
+                q: "Perhatikan gambar peta sebagian wilayah berikut! Komponen peta yang berfungsi menjelaskan makna simbol-simbol adalah...",
+                img: "./gambar/soal-peta.jpg", // Jalur input gambar 5
+                alt: "Gambar bagian dari komponen peta",
+                options: [
+                    { text: "Legenda peta yang berada di bagian sudut", isCorrect: true },
+                    { text: "Judul peta yang letaknya di bagian atas", isCorrect: false },
+                    { text: "Skala peta yang menunjukkan perbandingan jarak asli", isCorrect: false },
+                    { text: "Garis astronomis yang menentukan lokasi suatu tempat", isCorrect: false }
+                ],
+                explanation: "Legenda adalah keterangan yang mengartikan simbol-simbol khusus seperti jalan, gunung, dan ibu kota di dalam peta."
+            },
+            {
+                q: "Indonesia disebut sebagai negara maritim karena wilayahnya sebagian besar terdiri dari lautan. Keuntungan utama predikat ini adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Memiliki potensi sumber daya perikanan yang melimpah", isCorrect: true },
+                    { text: "Memiliki lahan pertanian yang luas dan sangat subur", isCorrect: false },
+                    { text: "Memiliki banyak gunung berapi yang sangat aktif", isCorrect: false },
+                    { text: "Memiliki ragam budaya yang sangat unik sekali", isCorrect: false }
+                ],
+                explanation: "Garis pantai dan wilayah laut luas menjadikan perairan Indonesia lumbung biodiversitas laut dan ikan."
+            },
+            {
+                q: "Keanekaragaman hayati di Indonesia sangat tinggi. Faktor geografis yang paling memengaruhi kondisi tersebut adalah letaknya di...",
+                img: "", alt: "",
+                options: [
+                    { text: "Kawasan iklim tropis dengan curah hujan tinggi", isCorrect: true },
+                    { text: "Dekat dengan kutub selatan yang sangat dingin", isCorrect: false },
+                    { text: "Daerah gurun pasir yang kering dan sangat panas", isCorrect: false },
+                    { text: "Kawasan iklim subtropis dengan empat musim berbeda", isCorrect: false }
+                ],
+                explanation: "Iklim tropis menjamin sinar matahari sepanjang tahun serta curah hujan stabil yang ideal untuk pertumbuhan flora/fauna."
+            },
+            {
+                q: "Banyak hutan mangrove ditemukan di pesisir pantai Indonesia. Fungsi ekologis utama dari hutan mangrove tersebut adalah...",
+                img: "", alt: "",
+                options: [
+                    { text: "Menahan abrasi pantai dari hantaman ombak laut", isCorrect: true },
+                    { text: "Menjadi tempat budidaya ikan air tawar konsumsi", isCorrect: false },
+                    { text: "Menyediakan bahan baku utama untuk pembuatan kertas", isCorrect: false },
+                    { text: "Menjadi lokasi wisata pegunungan yang sangat sejuk", isCorrect: false }
+                ],
+                explanation: "Akar kuat bakau bertindak sebagai benteng alami mencegah erosi/abrasi daratan oleh kuatnya gelombang ombak."
+            }
+        ];
+
+        // Unique key untuk menghindari bentrok data riwayat 
+        const HISTORY_KEY = 'IPAS_STS_K5_S2_HOTS_History';
+
+        let quizData = [];
+        let currentQIndex = 0;
+        let score = 0;
+        let userAnswers = {}; 
+
+        // Fungsi Acak Array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadHistory() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            
+            if(history.length === 0) {
+                historyList.innerHTML = "<li>Belum ada riwayat kuis.</li>";
+                return;
+            }
+
+            history.forEach(item => {
+                let li = document.createElement('li');
+                li.innerHTML = `<span><strong>${item.name}</strong> (${item.kelas})</span> <span>Skor: <strong>${item.score}</strong> <small style="color:#888;">[${item.time}]</small></span>`;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Panggil history saat load
+        loadHistory();
+
+        function startQuiz() {
+            const name = document.getElementById('student-name').value.trim();
+            const kelas = document.getElementById('student-class').value.trim();
+            
+            if(!name || !kelas) {
+                alert("Harap isi Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Persiapan Data (Acak soal & Acak pilihan jawaban)
+            quizData = JSON.parse(JSON.stringify(bankSoal));
+            shuffleArray(quizData);
+            quizData.forEach(q => shuffleArray(q.options));
+
+            currentQIndex = 0;
+            score = 0;
+            userAnswers = {};
+            
+            document.getElementById('live-score').textContent = score;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = quizData[currentQIndex];
+            
+            document.getElementById('current-q-num').textContent = currentQIndex + 1;
+            document.getElementById('question-text').textContent = qData.q;
+            
+            const qImage = document.getElementById('q-image');
+            if(qData.img !== "") {
+                qImage.src = qData.img;
+                qImage.alt = qData.alt;
+                qImage.style.display = 'block';
+            } else {
+                qImage.style.display = 'none';
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            const hasAnswered = userAnswers[currentQIndex] !== undefined;
+            const explanationBox = document.getElementById('explanation-box');
+
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+                
+                if(hasAnswered) {
+                    btn.disabled = true;
+                    if(opt.isCorrect) btn.classList.add('option-correct');
+                    else if(index === userAnswers[currentQIndex] && !opt.isCorrect) {
+                        btn.classList.add('option-wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectOption(index, opt.isCorrect);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            // Atur Navigasi Bawah
+            document.getElementById('btn-prev').style.visibility = currentQIndex > 0 ? 'visible' : 'hidden';
+            
+            if(hasAnswered) {
+                explanationBox.style.display = 'block';
+                document.getElementById('explanation-text').textContent = qData.explanation;
+                showNextNav();
+            } else {
+                explanationBox.style.display = 'none';
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-finish').style.display = 'none';
+            }
+        }
+
+        function selectOption(selectedIndex, isCorrect) {
+            userAnswers[currentQIndex] = selectedIndex;
+            
+            if(isCorrect) {
+                score += 4; // 25 soal x 4 = 100
+                document.getElementById('live-score').textContent = score;
+            }
+
+            renderQuestion(); // Render ulang untuk efek warna
+        }
+
+        function showNextNav() {
+            if(currentQIndex < quizData.length - 1) {
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-finish').style.display = 'none';
+            } else {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-finish').style.display = 'block';
+            }
+        }
+
+        function nextQuestion() {
+            if(currentQIndex < quizData.length - 1) {
+                currentQIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQIndex > 0) {
+                currentQIndex--;
+                renderQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const name = document.getElementById('student-name').value;
+            const kelas = document.getElementById('student-class').value;
+            const now = new Date();
+            const timeStr = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            // Simpan ke local storage
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            history.unshift({ name, kelas, score, time: timeStr });
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            
+            document.getElementById('result-text').innerHTML = `Hebat <strong>${name}</strong> (Kelas ${kelas})!<br>Nilai akhir kamu adalah:`;
+            document.getElementById('final-score').textContent = score;
+            
+            loadHistory(); // Update tampilan history di awal
+        }
+    </script>
+</body>
+</html>

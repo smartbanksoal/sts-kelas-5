@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis PAI Kelas 5 - STS</title>
+    <style>
+        /* CSS Styling */
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --correct: #2ecc71;
+            --wrong: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none; /* Anti copy-paste */
+        }
+
+        /* Prevent user selection for text, allow for inputs */
+        input {
+            user-select: text;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            text-align: center;
+        }
+
+        .login-screen h1 {
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: inline-block;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-start { background-color: var(--primary); color: white; }
+        .btn-home { background-color: var(--secondary); color: white; text-decoration: none; margin-bottom: 20px; }
+        .btn-nav { background-color: var(--dark); color: white; width: auto; }
+        .btn-nav:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+        /* History Table */
+        .history-container {
+            margin-top: 30px;
+            border-top: 2px solid var(--light);
+            padding-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Quiz Area */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .question-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none; /* Hidden by default */
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background-color: var(--light);
+            color: var(--dark);
+            text-align: left;
+            padding: 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #dcdde1;
+        }
+
+        .option-btn.correct { background-color: var(--correct); color: white; border-color: var(--correct); }
+        .option-btn.wrong { background-color: var(--wrong); color: white; border-color: var(--wrong); }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f8f5;
+            border-left: 5px solid var(--correct);
+            border-radius: 5px;
+            display: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <header id="main-header">
+        Kode Soal: PAI-STS-K5-S2-HOTS
+    </header>
+
+    <div class="container">
+        <div class="card login-screen" id="login-screen">
+            <h1>Selamat Datang di Ujian STS</h1>
+            <div class="input-group">
+                <label for="student-name">Nama Lengkap</label>
+                <input type="text" id="student-name" placeholder="Masukkan nama lengkapmu..." required>
+            </div>
+            <div class="input-group">
+                <label for="student-class">Kelas</label>
+                <input type="text" id="student-class" placeholder="Masukkan kelasmu..." required>
+            </div>
+            
+            <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis</button>
+            <br><br>
+            <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+
+            <div class="history-container">
+                <h3>Riwayat Pencapaian Skor</h3>
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card hidden" id="quiz-screen">
+            <div class="quiz-header">
+                <span id="question-number" style="font-weight: bold; color: var(--primary);">Soal 1 / 25</span>
+                <span style="font-weight: bold; color: var(--secondary);">Skor: <span id="current-score">0</span></span>
+            </div>
+            
+            <img id="q-image" class="question-image" src="" alt="Gambar Soal">
+            <div id="q-caption" class="image-caption"></div>
+            
+            <div class="question-text" id="question-text">
+                </div>
+
+            <div class="options" id="options-container">
+                </div>
+
+            <div class="explanation" id="explanation-box">
+                <strong>Pembahasan:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="navigation">
+                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()">&#8592; Sebelumnya</button>
+                <button class="btn btn-nav" id="btn-next" onclick="nextQuestion()">Selanjutnya &#8594;</button>
+            </div>
+        </div>
+
+        <div class="card login-screen hidden" id="result-screen">
+            <h1>Kuis Selesai!</h1>
+            <h2 style="font-size: 3rem; color: var(--correct); margin: 20px 0;" id="final-score">100</h2>
+            <p id="result-message" style="font-size: 1.2rem;"></p>
+            <button class="btn btn-start" onclick="location.reload()">Selesai & Simpan Skor</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy;<span id="year"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </footer>
+
+    <script>
+        // Mencegah Copy Paste lewat keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'a')) {
+                e.preventDefault();
+            }
+        });
+
+        // Set otomatis tahun di footer
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        const KODE_SOAL = "PAI-STS-K5-S2-HOTS";
+        const STORAGE_KEY = `riwayat_kuis_${KODE_SOAL}`;
+
+        // Data Soal (25 Soal HOTS)
+        const rawQuestions = [
+            // Soal 1-5
+            {
+                q: "Perhatikan potongan terjemahan Q.S. Ali 'Imran/3: 64 berikut: 'Katakanlah (Muhammad), Wahai Ahli Kitab! Marilah kita menuju kepada satu kalimat (pegangan) yang sama antara kami dan kamu...'. Kalimat yang tepat untuk melanjutkan ayat tersebut adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Bahwa kita tidak menyembah selain Allah", correct: true },
+                    { text: "Bahwa kita harus saling menghormati agama", correct: false },
+                    { text: "Bahwa manusia diciptakan berbeda-beda", correct: false },
+                    { text: "Bahwa kedamaian adalah tujuan yang utama", correct: false }
+                ],
+                explanation: "Lanjutan dari Q.S. Ali Imran ayat 64 adalah 'allā na'buda illallāh' yang artinya bahwa kita tidak menyembah selain Allah."
+            },
+            {
+                q: "Ahmad membaca berita tentang bencana alam hebat dan banyak kejahatan merajalela. Ia teringat pelajaran tentang tanda-tanda hari kiamat. Berdasarkan narasi tersebut, peristiwa yang termasuk tanda besar Hari Akhir adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Terbitnya matahari dari arah barat", correct: true },
+                    { text: "Sering terjadinya gempa bumi dan banjir", correct: false },
+                    { text: "Banyaknya gedung-gedung yang menjulang tinggi", correct: false },
+                    { text: "Ilmu agama mulai diabaikan oleh umat manusia", correct: false }
+                ],
+                explanation: "Tanda besar kiamat (Kiamat Kubra) meliputi peristiwa luar biasa seperti terbitnya matahari dari barat, turunnya Nabi Isa, dan munculnya Dajjal."
+            },
+            {
+                q: "Di sekolah, Budi yang beragama Islam berteman baik dengan Ketut yang beragama Hindu. Saat Ketut sakit, Budi menjenguk dan mendoakannya agar cepat sembuh. Tindakan Budi merupakan cerminan dari persaudaraan...",
+                image: "", caption: "",
+                options: [
+                    { text: "Ukhuwah Basyariyah (Persaudaraan kemanusiaan)", correct: true },
+                    { text: "Ukhuwah Islamiyah (Persaudaraan sesama umat Islam)", correct: false },
+                    { text: "Ukhuwah Wathaniyah (Persaudaraan sebangsa)", correct: false },
+                    { text: "Ukhuwah Nasabiyah (Persaudaraan karena keturunan)", correct: false }
+                ],
+                explanation: "Menghormati dan peduli terhadap sesama manusia yang berbeda agama merupakan wujud Ukhuwah Basyariyah (kemanusiaan)."
+            },
+            {
+                q: "Q.S. Al-Baqarah ayat 256 menegaskan bahwa 'Tidak ada paksaan dalam (menganut) agama (Islam)'. Pesan pokok yang paling tepat untuk diterapkan dalam kehidupan bermasyarakat sesuai ayat tersebut adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Membiarkan teman beribadah sesuai keyakinannya", correct: true },
+                    { text: "Mencampuradukkan tata cara ibadah semua agama", correct: false },
+                    { text: "Memaksa teman memeluk agama Islam dengan cara halus", correct: false },
+                    { text: "Menjauhi tetangga yang memiliki agama berbeda dengan kita", correct: false }
+                ],
+                explanation: "Ayat ini mengajarkan toleransi dan kebebasan beragama, sehingga kita harus membiarkan orang lain beribadah sesuai keyakinannya tanpa paksaan."
+            },
+            {
+                q: "Ketika mendengar kabar tetangganya meninggal dunia, Fatimah segera mengucapkan kalimat 'Innalillahi wa inna ilaihi raji'un'. Kalimat tarji' ini memiliki makna mendalam, yaitu...",
+                image: "", caption: "",
+                options: [
+                    { text: "Kesadaran bahwa semua milik Allah dan akan kembali pada-Nya", correct: true },
+                    { text: "Bentuk penyesalan atas takdir buruk yang telah menimpa seseorang", correct: false },
+                    { text: "Permohonan maaf kepada Allah atas segala dosa yang diperbuat", correct: false },
+                    { text: "Doa agar orang yang meninggal diberikan harta berlimpah di surga", correct: false }
+                ],
+                explanation: "Kalimat tarji' diucapkan saat terkena musibah, maknanya adalah penyerahan diri secara total bahwa kita milik Allah dan akan kembali kepada-Nya."
+            },
+            // Soal 6 (Bergambar 1)
+            {
+                q: "Perhatikan gambar perilaku berteman di bawah ini! Sikap yang ditunjukkan pada gambar merupakan contoh adab berteman dengan non-muslim yang tepat, karena mereka...",
+                image: "gambar/gambar-toleransi1.jpg", caption: "Gambar 1. Anak-anak berbeda pakaian adat dan agama sedang bermain bersama.",
+                options: [
+                    { text: "Bermain bersama tanpa membedakan latar belakang agama", correct: true },
+                    { text: "Mengikuti ritual ibadah agama teman untuk menunjukkan toleransi", correct: false },
+                    { text: "Membatasi pergaulan hanya pada saat di lingkungan sekolah saja", correct: false },
+                    { text: "Bermain bersama dengan tujuan agar teman mau masuk Islam", correct: false }
+                ],
+                explanation: "Berteman dengan non-muslim dibolehkan dalam hal sosial (muamalah) tanpa membedakan suku/agama, namun tidak boleh dalam urusan akidah/ibadah."
+            },
+            // Soal 7-11
+            {
+                q: "Pak Ali adalah seorang pedagang yang jujur. Ia yakin bahwa semua perbuatannya, sekecil apapun, akan dicatat dan ditimbang di hari kiamat. Hikmah beriman kepada Hari Akhir yang tercermin dari sikap Pak Ali adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Mendorong manusia untuk selalu berbuat baik dan menjauhi maksiat", correct: true },
+                    { text: "Membuat manusia merasa putus asa terhadap kehidupan duniawi", correct: false },
+                    { text: "Menjadikan manusia malas bekerja karena dunia hanya sementara", correct: false },
+                    { text: "Mendorong manusia mengumpulkan harta untuk dibawa mati kelak", correct: false }
+                ],
+                explanation: "Iman kepada hari akhir akan menjadi kontrol diri yang kuat agar selalu berbuat jujur dan amal saleh karena sadar adanya balasan (hisab)."
+            },
+            // Soal 8 (Bergambar 2)
+            {
+                q: "Berdasarkan ilustrasi gambar persahabatan tersebut, keuntungan berteman tanpa membedakan keyakinan di lingkungan masyarakat adalah...",
+                image: "gambar/gambar-gotongroyong.jpg", caption: "Gambar 2. Warga berbeda etnis bergotong-royong membersihkan lingkungan.",
+                options: [
+                    { text: "Menciptakan kerukunan, kedamaian, dan persatuan dalam masyarakat", correct: true },
+                    { text: "Menghilangkan perbedaan hukum antar agama yang ada di masyarakat", correct: false },
+                    { text: "Membuat semua penduduk meyakini satu agama yang sama nantinya", correct: false },
+                    { text: "Mencegah datangnya bencana alam yang sering melanda suatu daerah", correct: false }
+                ],
+                explanation: "Hikmah toleransi dan ukhuwah basyariyah adalah terwujudnya masyarakat yang rukun, damai, dan saling tolong-menolong."
+            },
+            {
+                q: "Susunlah potongan arti dari ayat berikut menjadi kalimat yang utuh: (1) dan kamu (2) antara kami (3) yang sama (4) marilah kita menuju kepada satu kalimat. Susunan yang benar adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "(4) - (3) - (2) - (1)", correct: true },
+                    { text: "(4) - (2) - (1) - (3)", correct: false },
+                    { text: "(1) - (2) - (3) - (4)", correct: false },
+                    { text: "(3) - (4) - (1) - (2)", correct: false }
+                ],
+                explanation: "Terjemahan Q.S. Ali Imran 64 yang tepat adalah 'Marilah kita menuju kepada satu kalimat yang sama antara kami dan kamu'."
+            },
+            {
+                q: "Setelah alam semesta hancur, manusia akan dibangkitkan dari alam kubur dan dikumpulkan di sebuah padang yang sangat luas untuk menunggu pengadilan Allah. Padang luas tempat berkumpulnya manusia ini disebut...",
+                image: "", caption: "",
+                options: [
+                    { text: "Padang Mahsyar", correct: true },
+                    { text: "Yaumul Ba'ats", correct: false },
+                    { text: "Yaumul Mizan", correct: false },
+                    { text: "Yaumul Jaza'", correct: false }
+                ],
+                explanation: "Padang Mahsyar adalah tempat berkumpulnya seluruh umat manusia setelah dibangkitkan dari kubur (Yaumul Ba'ats)."
+            },
+            {
+                q: "Sikap manakah di bawah ini yang paling sesuai dengan makna ukhuwah wathaniyah (persaudaraan sebangsa dan setanah air) di sekolah?",
+                image: "", caption: "",
+                options: [
+                    { text: "Melaksanakan upacara bendera dengan khidmat bersama seluruh siswa", correct: true },
+                    { text: "Membentuk kelompok belajar yang anggotanya hanya seagama saja", correct: false },
+                    { text: "Menolong teman yang terjatuh karena dia berasal dari suku yang sama", correct: false },
+                    { text: "Hanya membeli makanan di kantin yang penjualnya seagama dengan kita", correct: false }
+                ],
+                explanation: "Ukhuwah wathaniyah adalah persaudaraan karena satu bangsa/negara, contohnya menghormati simbol negara bersama siswa lain."
+            },
+            // Soal 12 (Bergambar 3)
+            {
+                q: "Perhatikan ilustrasi timbangan amal perbuatan manusia di bawah ini. Tahapan peristiwa hari akhir yang digambarkan pada ilustrasi tersebut adalah...",
+                image: "gambar/gambar-mizan.jpg", caption: "Gambar 3. Ilustrasi timbangan amal baik dan buruk.",
+                options: [
+                    { text: "Yaumul Mizan", correct: true },
+                    { text: "Yaumul Hisab", correct: false },
+                    { text: "Yaumul Ba'ats", correct: false },
+                    { text: "Yaumul Jaza'", correct: false }
+                ],
+                explanation: "Yaumul Mizan adalah hari penimbangan amal perbuatan manusia selama hidup di dunia untuk menentukan tempatnya kelak."
+            },
+            // Soal 13-15
+            {
+                q: "Negara Indonesia terdiri dari berbagai macam suku, bahasa, dan agama. Sebagai seorang muslim yang baik, cara menyikapi keragaman tersebut agar terwujud persaudaraan sejati adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Menghargai tradisi daerah lain selama tidak melanggar akidah Islam", correct: true },
+                    { text: "Mengikuti semua tradisi suku lain agar dianggap bertoleransi tinggi", correct: false },
+                    { text: "Menjauhi teman yang berasal dari pulau yang berbeda karena sulit akrab", correct: false },
+                    { text: "Menganggap suku dan budaya sendiri adalah yang paling mulia di dunia", correct: false }
+                ],
+                explanation: "Islam menghargai keragaman (kebhinekaan) selama tidak bertentangan dengan ajaran tauhid dan akidah Islam."
+            },
+            {
+                q: "Berikut ini yang bukan termasuk pesan pokok yang terkandung dalam Q.S. Ali Imran ayat 64 tentang interaksi dengan Ahli Kitab adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Anjuran untuk mengikuti tata cara peribadatan dari agama lain", correct: true },
+                    { text: "Ajakan untuk menyembah hanya kepada Allah SWT Tuhan Yang Esa", correct: false },
+                    { text: "Larangan untuk menyekutukan Allah SWT dengan sesuatu apapun", correct: false },
+                    { text: "Larangan untuk menjadikan sesama manusia sebagai tuhan selain Allah", correct: false }
+                ],
+                explanation: "Ayat ini berisi ajakan bertauhid, BUKAN anjuran mencampuradukkan ibadah (sinkretisme)."
+            },
+            {
+                q: "Seringnya terjadi fitnah, hilangnya sifat amanah dalam diri manusia, dan banyaknya pembunuhan merupakan ciri-ciri kondisi masyarakat menjelang akhir zaman. Tanda-tanda tersebut tergolong ke dalam...",
+                image: "", caption: "",
+                options: [
+                    { text: "Tanda-tanda kecil Hari Akhir (Kiamat Sugra)", correct: true },
+                    { text: "Tanda-tanda besar Hari Akhir (Kiamat Kubra)", correct: false },
+                    { text: "Peristiwa alam biasa yang terjadi setiap abad", correct: false },
+                    { text: "Hukuman langsung dari Allah SWT kepada kaum kafir", correct: false }
+                ],
+                explanation: "Rusaknya moralitas umat manusia seperti hilangnya kejujuran dan amanah merupakan tanda-tanda kecil (sugra) kiamat."
+            },
+            // Soal 16 (Bergambar 4)
+            {
+                q: "Perhatikan gambar ilustrasi interaksi sosial berikut. Rasulullah SAW pernah menjenguk tetangga Yahudinya yang sedang sakit meskipun tetangga tersebut sering menyakitinya. Keteladanan yang bisa kita ambil adalah...",
+                image: "gambar/gambar-menjenguk.jpg", caption: "Gambar 4. Ilustrasi menjenguk tetangga sakit.",
+                options: [
+                    { text: "Berbuat baik kepada siapapun tanpa memandang perbedaan keyakinannya", correct: true },
+                    { text: "Hanya berbuat baik kepada tetangga jika mereka membalas kebaikan kita", correct: false },
+                    { text: "Menjenguk orang sakit agar kelak mendapatkan pujian dari masyarakat", correct: false },
+                    { text: "Memaksa tetangga yang sakit agar segera memeluk agama Islam", correct: false }
+                ],
+                explanation: "Rasulullah mengajarkan akhlak mulia, bersikap baik dan penuh kasih sayang kepada sesama manusia tanpa memandang perbedaan iman."
+            },
+            // Soal 17-24
+            {
+                q: "Manakah dari perilaku berikut ini yang bertentangan dengan nilai-nilai ukhuwah dan dapat merusak persaudaraan dalam Islam?",
+                image: "", caption: "",
+                options: [
+                    { text: "Menyebarkan aib atau keburukan teman di media sosial", correct: true },
+                    { text: "Menyelesaikan perselisihan antar teman secara musyawarah", correct: false },
+                    { text: "Saling mengingatkan dalam kebaikan dan kesabaran", correct: false },
+                    { text: "Memberikan bantuan kepada teman yang sedang kesulitan", correct: false }
+                ],
+                explanation: "Membuka aib (ghibah/fitnah) sangat dilarang dalam Islam karena merusak ukhuwah dan persaudaraan."
+            },
+            {
+                q: "Pernyataan yang tepat mengenai penerapan Q.S. Al-Baqarah ayat 256 dalam kehidupan sekolah dasar adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Tidak memaksakan kehendak atau pendapat pribadi kepada teman sekelas", correct: true },
+                    { text: "Mengajak seluruh teman sekelas untuk memiliki cita-cita yang seragam", correct: false },
+                    { text: "Memaksa adik kelas untuk mengikuti kegiatan ekstrakurikuler yang sama", correct: false },
+                    { text: "Membedakan teman berdasarkan tingkat kecerdasan dan nilai akademis", correct: false }
+                ],
+                explanation: "Penerapan 'tidak ada paksaan' secara luas adalah menghargai hak, pendapat, dan kebebasan orang lain dalam kebaikan."
+            },
+            {
+                q: "Mempercayai bahwa seluruh alam semesta beserta isinya akan hancur binasa dan berganti dengan kehidupan yang kekal abadi merupakan pengertian dari...",
+                image: "", caption: "",
+                options: [
+                    { text: "Iman kepada Hari Akhir (Kiamat)", correct: true },
+                    { text: "Iman kepada Qada dan Qadar", correct: false },
+                    { text: "Iman kepada Kitab-kitab Allah", correct: false },
+                    { text: "Iman kepada Malaikat-malaikat Allah", correct: false }
+                ],
+                explanation: "Iman kepada Hari Kiamat artinya meyakini sepenuh hati bahwa dunia akan hancur dan digantikan dengan alam akhirat."
+            },
+            {
+                q: "Arti dari lafaz 'Lā ikrāha fid-dīn' pada surat Al-Baqarah ayat 256 adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Tidak ada paksaan dalam (menganut) agama", correct: true },
+                    { text: "Agama yang diridhai di sisi Allah adalah Islam", correct: false },
+                    { text: "Barangsiapa mencari agama selain Islam, tidak akan diterima", correct: false },
+                    { text: "Untukmulah agamamu, dan untukkula agamaku", correct: false }
+                ],
+                explanation: "'Lā ikrāha fid-dīn' secara harfiah berarti tidak ada paksaan dalam memeluk agama (Islam)."
+            },
+            {
+                q: "Dalam studi kasus di sekolah, Siti yang Muslim meminjamkan alat tulisnya kepada Maria yang beragama Kristen saat ujian. Tindakan Siti tersebut dibenarkan karena...",
+                image: "", caption: "",
+                options: [
+                    { text: "Tolong menolong dalam urusan sosial (muamalah) sangat dianjurkan", correct: true },
+                    { text: "Tolong menolong bisa membuat Maria berhutang budi pada Siti kelak", correct: false },
+                    { text: "Siti ingin mendapatkan pujian dari guru di kelasnya", correct: false },
+                    { text: "Alat tulis yang dipinjamkan adalah barang yang harganya murah", correct: false }
+                ],
+                explanation: "Bekerjasama dan tolong-menolong dalam urusan duniawi (muamalah) diperbolehkan dengan pemeluk agama manapun."
+            },
+            {
+                q: "Peristiwa dibangkitkannya manusia dari alam kubur (barzakh) setelah malaikat Israfil meniup sangkakala yang kedua disebut...",
+                image: "", caption: "",
+                options: [
+                    { text: "Yaumul Ba'ats", correct: true },
+                    { text: "Yaumul Hisab", correct: false },
+                    { text: "Yaumul Jaza'", correct: false },
+                    { text: "Yaumul Mahsyar", correct: false }
+                ],
+                explanation: "Yaumul Ba'ats berarti hari kebangkitan, dimana seluruh makhluk yang mati dihidupkan kembali."
+            },
+            {
+                q: "Q.S. Ali Imran ayat 64 menyerukan persatuan ('kalimatun sawa'). Makna seruan ini bagi kehidupan berbangsa dan bernegara di Indonesia adalah...",
+                image: "", caption: "",
+                options: [
+                    { text: "Mencari titik temu dan kesepakatan demi menjaga persatuan bangsa", correct: true },
+                    { text: "Menyamaratakan seluruh ajaran agama agar tidak terjadi konflik", correct: false },
+                    { text: "Menghapuskan hukum adat setempat yang sudah lama berkembang", correct: false },
+                    { text: "Memisahkan masyarakat berdasarkan agama di pulau-pulau berbeda", correct: false }
+                ],
+                explanation: "Kalimatun sawa (titik temu) mengajarkan dialog dan musyawarah untuk mencari kesepakatan bersama demi persatuan."
+            },
+            {
+                q: "Ukhuwah secara bahasa bermakna persaudaraan. Ikatan persaudaraan yang dibangun atas dasar kesamaan iman dan aqidah kepada Allah SWT disebut...",
+                image: "", caption: "",
+                options: [
+                    { text: "Ukhuwah Islamiyah", correct: true },
+                    { text: "Ukhuwah Wathaniyah", correct: false },
+                    { text: "Ukhuwah Insaniyah", correct: false },
+                    { text: "Ukhuwah Qabaliyah", correct: false }
+                ],
+                explanation: "Ukhuwah Islamiyah adalah persaudaraan teguh yang diikat oleh kesamaan akidah atau keimanan Islam."
+            },
+            // Soal 25 (Bergambar 5)
+            {
+                q: "Perhatikan gambar aktivitas ibadah berikut! Hikmah beriman kepada Hari Akhir yang paling memotivasi seseorang untuk rajin beribadah seperti pada gambar adalah keyakinan bahwa...",
+                image: "gambar/gambar-ibadah.jpg", caption: "Gambar 5. Seseorang sedang khusyuk berdoa dan beribadah di masjid.",
+                options: [
+                    { text: "Setiap amal baik dan buruk akan mendapatkan balasan di akhirat kelak", correct: true },
+                    { text: "Dengan rajin beribadah, seseorang akan dihormati oleh tetangganya", correct: false },
+                    { text: "Beribadah dapat mendatangkan kekayaan harta benda di dunia ini", correct: false },
+                    { text: "Ibadah adalah syarat untuk bisa diakui sebagai warga negara yang baik", correct: false }
+                ],
+                explanation: "Keyakinan akan adanya Yaumul Jaza' (Hari Pembalasan) memotivasi muslim untuk memperbanyak amal saleh untuk bekal akhirat."
+            }
+        ];
+
+        // Aplikasi Kuis Variables
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let studentName = "";
+        let studentClass = "";
+        const scorePerQuestion = 100 / 25; // 4 point per nomor
+
+        // Utility: Shuffle Array
+        function shuffleArray(array) {
+            let shuffled = array.slice();
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Init History on Load
+        window.onload = function() {
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">Belum ada riwayat kuis.</td></tr>';
+                return;
+            }
+
+            history.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${item.name}</td>
+                    <td>${item.cls}</td>
+                    <td><strong>${item.score}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function startQuiz() {
+            studentName = document.getElementById('student-name').value.trim();
+            studentClass = document.getElementById('student-class').value.trim();
+
+            if (!studentName || !studentClass) {
+                alert("Mohon isi Nama Lengkap dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Persiapan data
+            questions = shuffleArray(rawQuestions);
+            // Acak opsi jawaban di setiap soal
+            questions.forEach(q => {
+                q.options = shuffleArray(q.options);
+            });
+            
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            score = 0;
+
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-number').innerText = `Soal ${currentQuestionIndex + 1} / ${questions.length}`;
+            document.getElementById('current-score').innerText = score;
+            
+            // Handle Image
+            const imgEl = document.getElementById('q-image');
+            const captionEl = document.getElementById('q-caption');
+            if (q.image !== "") {
+                imgEl.src = q.image;
+                imgEl.style.display = "block";
+                captionEl.innerText = q.caption;
+                captionEl.style.display = "block";
+            } else {
+                imgEl.style.display = "none";
+                captionEl.style.display = "none";
+            }
+
+            document.getElementById('question-text').innerText = q.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            // Explanation box hidden by default
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('explanation-text').innerText = q.explanation;
+
+            const hasAnswered = userAnswers[currentQuestionIndex] !== null;
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                // Prefix A, B, C, D
+                const prefix = String.fromCharCode(65 + index);
+                btn.innerText = `${prefix}. ${opt.text}`;
+                
+                if (hasAnswered) {
+                    btn.disabled = true;
+                    // Highlight correct and wrong based on previous answer
+                    if (opt.correct) btn.classList.add('correct');
+                    if (userAnswers[currentQuestionIndex] === index && !opt.correct) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectOption(index, opt.correct);
+                }
+                
+                optionsContainer.appendChild(btn);
+            });
+
+            if (hasAnswered) {
+                document.getElementById('explanation-box').style.display = 'block';
+            }
+
+            // Navigation Buttons
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('btn-next').innerText = "Selesai Kuis";
+            } else {
+                document.getElementById('btn-next').innerText = "Selanjutnya \u2192";
+            }
+        }
+
+        function selectOption(selectedIndex, isCorrect) {
+            userAnswers[currentQuestionIndex] = selectedIndex;
+            
+            if (isCorrect) {
+                score += scorePerQuestion;
+            }
+
+            // Update UI
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach((btn, index) => {
+                btn.disabled = true;
+                if (questions[currentQuestionIndex].options[index].correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            document.getElementById('current-score').innerText = score;
+            document.getElementById('explanation-box').style.display = 'block';
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert("Silakan pilih jawaban terlebih dahulu sebelum melanjutkan!");
+                return;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            finalScoreEl.innerText = score;
+
+            let msg = "";
+            if (score >= 80) { msg = "Luar Biasa! Pemahamanmu sangat baik."; finalScoreEl.style.color = "var(--correct)"; }
+            else if (score >= 60) { msg = "Bagus! Terus tingkatkan belajarmu."; finalScoreEl.style.color = "var(--secondary)"; }
+            else { msg = "Tetap semangat! Jangan menyerah untuk terus belajar."; finalScoreEl.style.color = "var(--wrong)"; }
+            document.getElementById('result-message').innerText = msg;
+
+            saveScore();
+        }
+
+        function saveScore() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('id-ID') + " " + today.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+            
+            const record = {
+                date: dateStr,
+                name: studentName,
+                cls: studentClass,
+                score: score
+            };
+
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.push(record);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IND-STS-K5-S2-HOTS</title>
+    <style>
+        /* Desain UI/UX Menarik & Anti-Copy */
+        :root {
+            --primary: #4A90E2;
+            --secondary: #FF6B6B;
+            --bg-color: #F0F4F8;
+            --text-dark: #333;
+            --white: #FFF;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0; padding: 0; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            user-select: none; /* Anti copy paste */
+            -webkit-user-select: none;
+        }
+        .header {
+            width: 100%; background: var(--primary); color: var(--white);
+            text-align: center; padding: 15px; font-weight: bold; letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 1.2rem;
+        }
+        .container {
+            width: 90%; max-width: 800px; background: var(--white);
+            border-radius: 15px; padding: 30px; margin: 30px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-top: 5px solid var(--secondary);
+            flex-grow: 1;
+        }
+        .footer {
+            width: 100%; background: #1a1a1a; color: #ccc;
+            text-align: center; padding: 20px; font-size: 0.9rem; margin-top: auto;
+        }
+        .footer a { color: #4A90E2; text-decoration: none; font-weight: bold; }
+        .footer a:hover { text-decoration: underline; }
+        
+        /* Form & Buttons */
+        input[type="text"] {
+            width: 100%; padding: 12px; margin: 10px 0 20px;
+            border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;
+        }
+        button {
+            padding: 12px 20px; border: none; border-radius: 8px; font-size: 1rem;
+            cursor: pointer; font-weight: bold; transition: all 0.3s ease;
+        }
+        .btn-start { background: var(--primary); color: white; width: 100%; margin-bottom: 15px;}
+        .btn-start:hover { background: #357abd; }
+        .btn-home { background: #6c757d; color: white; width: 100%; margin-bottom: 20px;}
+        .btn-home:hover { background: #5a6268; text-decoration: none; display: block; text-align:center;}
+        
+        /* Quiz Elements */
+        .info-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.5; color: var(--text-dark); }
+        .img-container { text-align: center; margin-bottom: 20px; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 8px; border: 2px dashed #ccc; }
+        .img-desc { font-size: 0.85rem; color: #666; font-style: italic; margin-top: 5px; }
+        
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .option-btn {
+            background: #f8f9fa; border: 2px solid #ddd; padding: 15px; text-align: left;
+            color: var(--text-dark); border-radius: 8px;
+        }
+        .option-btn:hover:not(:disabled) { background: #e2e6ea; border-color: #cbd3da; }
+        /* Perbaikan visibilitas warna untuk jawaban agar menonjol saat diklik */
+        .option-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        
+        .pembahasan {
+            background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px;
+            margin-top: 20px; border-radius: 5px; display: none;
+        }
+        
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
+        /* PERBAIKAN 1: Hapus display: none di sini agar diatur sepenuhnya oleh class .hidden */
+        .btn-nav { background: #17a2b8; color: white; flex: 1; }
+        
+        /* History Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: var(--primary); color: white; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="headerText">Kode Soal: IND-STS-K5-S2-HOTS</div>
+
+    <div class="container" id="loginScreen">
+        <h2 style="text-align: center; color: var(--primary);">Selamat Datang di Ujian STS</h2>
+        <p style="text-align: center; color: #666;">Silakan masukkan data diri Anda untuk memulai.</p>
+        
+        <label for="nama">Nama Lengkap:</label>
+        <input type="text" id="nama" placeholder="Ketik nama lengkap Anda..." autocomplete="off">
+        
+        <label for="kelas">Kelas:</label>
+        <input type="text" id="kelas" placeholder="Contoh: 5A" autocomplete="off">
+        
+        <button class="btn-start" onclick="startQuiz()">Mulai Kuis Sekarang</button>
+        <a href="../index.html" class="btn-home" style="box-sizing: border-box; display: inline-block; padding: 12px 20px; border-radius: 8px; font-weight: bold; transition: all 0.3s ease;">Kembali ke Home</a>
+        
+        <h3 style="margin-top: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Riwayat Skor</h3>
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Skor</th>
+                    <th>Waktu</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="container hidden" id="quizScreen">
+        <div class="info-bar">
+            <span id="progressText">Soal: 1 / 25</span>
+            <span id="scoreText">Skor Sementara: 0</span>
+        </div>
+        
+        <div id="questionArea"></div>
+        <div class="img-container hidden" id="imgArea">
+            <img id="qImage" src="" alt="Gambar Soal">
+            <div class="img-desc" id="qImageDesc"></div>
+        </div>
+        
+        <div class="options-grid" id="optionsArea"></div>
+        
+        <div class="pembahasan" id="pembahasanArea"></div>
+        
+        <div class="nav-buttons">
+            <button class="btn-nav hidden" id="btnPrev" onclick="goPrev()">&#8592; Sebelumnya</button>
+            <button class="btn-nav" id="btnNext" onclick="goNext()">Selanjutnya &#8594;</button>
+            <button class="btn-nav hidden" id="btnFinish" style="background:#28a745;" onclick="finishQuiz()">Selesai & Simpan Skor</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span id="year"></span> Oleh: Dwi Endrasto<br>
+        Produk ini asli jika didapatkan/dibeli melalui 
+        <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a>
+    </div>
+
+    <script>
+        // --- PROTEKSI KEAMANAN ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => {
+            event.preventDefault();
+            alert("Maaf, fitur salin teks dinonaktifkan demi integritas ujian.");
+        });
+
+        // --- FOOTER TAHUN OTOMATIS ---
+        document.getElementById('year').textContent = "@" + new Date().getFullYear();
+
+        // --- DATABASE SOAL ---
+        const bankSoal = [
+            {
+                q: "Sebuah teks menyebutkan bahwa warga dievakuasi oleh tim SAR. Kepanjangan dari akronim SAR yang paling tepat untuk konteks penyelamatan tersebut adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "search and rescue team", 
+                    "search and relief team", 
+                    "system and rescue team", 
+                    "system and relief team"  
+                ],
+                ans: 0,
+                pembahasan: "SAR singkatan dari Search And Rescue, yang bertugas melakukan pencarian dan pertolongan."
+            },
+            {
+                q: "Bacalah kutipan berikut: 'Banjir melanda wilayah hilir. Menurut warga, banjir ini adalah yang terparah.' Pernyataan manakah yang murni merupakan sebuah opini?",
+                img: null, imgDesc: null,
+                options: [
+                    "banjir ini sungguh sangat parah", 
+                    "air merendam rumah para warga", 
+                    "hujan turun sejak hari senin", 
+                    "bantuan datang pada sore hari"  
+                ],
+                ans: 0,
+                pembahasan: "Tingkat keparahan banjir ('terparah') adalah pandangan subjektif warga, sehingga termasuk opini."
+            },
+            {
+                q: "Budi menerima surel yang berbunyi: 'Tolong kirimkan revisi laporan secepatnya.' Dilihat dari isinya, tujuan utama surel tersebut dikirimkan adalah untuk...",
+                img: null, imgDesc: null,
+                options: [
+                    "meminta perbaikan sebuah dokumen penting", 
+                    "menanyakan kabar teman satu kantor", 
+                    "mengundang rapat pada esok hari", 
+                    "menyapa rekan kerja secara formal"  
+                ],
+                ans: 0,
+                pembahasan: "Surel tersebut memuat instruksi jelas untuk mengirimkan 'revisi laporan', yang berarti meminta perbaikan dokumen."
+            },
+            {
+                q: "Perhatikan iklan produk di atas. Kalimat manakah yang mengandung opini untuk menarik minat pembeli?",
+                img: "gambar/iklan_sepatu.jpg", 
+                imgDesc: "Keterangan: Gambar iklan sepatu dengan tulisan 'Sepatu Super Nyaman, Bikin Langkahmu Lebih Percaya Diri! Diskon 50% di Toko Kami.'",
+                options: [
+                    "sepatu ini membuat lebih percaya diri", 
+                    "sepatu ini dijual dengan diskon besar", 
+                    "sepatu ini tersedia di toko kami", 
+                    "sepatu ini terbuat dari bahan kanvas"  
+                ],
+                ans: 0,
+                pembahasan: "Kata 'nyaman' dan 'membuat percaya diri' adalah opini (klaim subjektif pembuat iklan)."
+            },
+            {
+                q: "Siswa kelas 5 sedang menanam pohon. Mereka membagi tugas dengan rapi. Ada yang menggali, menanam, dan menyiram. Ide pokok paragraf tersebut adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "kegiatan siswa menanam pohon bersama", 
+                    "alat untuk menanam pohon bersama", 
+                    "waktu yang tepat menanam pohon", 
+                    "tempat siswa menanam pohon bersama"  
+                ],
+                ans: 0,
+                pembahasan: "Seluruh kalimat dalam paragraf menjelaskan tentang kegiatan atau aktivitas siswa dalam menanam pohon."
+            },
+            {
+                q: "Andi ingin mencari informasi tentang cara berkembang biak hewan mamalia di internet. Kata kunci paling efektif yang harus ia ketik adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "cara hewan mamalia berkembang biak", 
+                    "jenis jenis hewan mamalia darat", 
+                    "makanan hewan mamalia setiap hari", 
+                    "tempat hidup hewan mamalia liar"  
+                ],
+                ans: 0,
+                pembahasan: "Kata kunci harus spesifik dan mencakup subjek (hewan mamalia) serta informasi yang dicari (cara berkembang biak)."
+            },
+            {
+                q: "Kalimat fakta memiliki ciri-ciri tertentu yang membedakannya dari opini. Di antara pilihan berikut, manakah yang merupakan ciri utama kalimat fakta?",
+                img: null, imgDesc: null,
+                options: [
+                    "kebenarannya dapat dibuktikan secara nyata", 
+                    "merupakan pendapat dari seseorang ahli", 
+                    "mengandung kata mungkin atau sepertinya", 
+                    "berisi dugaan yang belum terjadi"  
+                ],
+                ans: 0,
+                pembahasan: "Fakta adalah hal yang benar-benar terjadi dan kebenarannya empiris (dapat dibuktikan)."
+            },
+            {
+                q: "Akronim berbeda dengan singkatan biasa. Manakah pernyataan yang paling tepat mendeskripsikan pengertian dari akronim?",
+                img: null, imgDesc: null,
+                options: [
+                    "gabungan huruf yang dibaca sebagai kata", 
+                    "gabungan huruf yang dibaca satu persatu", 
+                    "pemendekan kata untuk penulisan surat resmi", 
+                    "pemendekan kata menggunakan tanda titik dua"  
+                ],
+                ans: 0,
+                pembahasan: "Akronim adalah kependekan yang berupa gabungan suku kata yang dilafalkan secara wajar seperti kata (contoh: Pemilu)."
+            },
+            {
+                q: "Berdasarkan bagan siklus air tersebut, bagian teks eksplanasi yang menjelaskan proses menguapnya air laut disebut...",
+                img: "gambar/siklus_air.jpg", 
+                imgDesc: "Keterangan: Gambar bagan siklus air menunjukkan panah dari laut ke awan (Evaporasi).",
+                options: [
+                    "deretan penjelas tentang proses alam", 
+                    "pernyataan umum tentang siklus air", 
+                    "kesimpulan akhir dari proses alam", 
+                    "pendapat ahli tentang siklus air"  
+                ],
+                ans: 0,
+                pembahasan: "Penjelasan mengenai urutan proses kejadian (seperti evaporasi) masuk ke dalam struktur 'deretan penjelas' pada teks eksplanasi."
+            },
+            {
+                q: "Sebuah teks dipasang di pinggir jalan dengan warna mencolok. Teks tersebut dikategorikan sebagai iklan jika memenuhi fungsi utamanya, yaitu...",
+                img: null, imgDesc: null,
+                options: [
+                    "membujuk orang memakai barang atau jasa", 
+                    "memberi informasi tentang cuaca hari ini", 
+                    "menceritakan kisah fiksi yang sangat seru", 
+                    "menjelaskan cara membuat kerajinan tangan lokal"  
+                ],
+                ans: 0,
+                pembahasan: "Iklan bertujuan persuasif, yaitu membujuk khalayak ramai agar tertarik pada barang/jasa yang ditawarkan."
+            },
+            {
+                q: "Penulisan kalimat di bawah ini yang paling tepat sesuai dengan kaidah penggunaan huruf kapital adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "ayah pergi ke kota surabaya hari minggu", 
+                    "Ayah pergi ke kota Surabaya hari Minggu", 
+                    "ayah pergi ke Kota surabaya hari Minggu", 
+                    "Ayah pergi ke Kota Surabaya hari minggu"  
+                ],
+                ans: 1,
+                pembahasan: "Huruf kapital dipakai di awal kalimat (Ayah), nama geografis yang diikuti nama kota (Surabaya), dan nama hari (Minggu)."
+            },
+            {
+                q: "Aturan penulisan angka dalam kalimat harus diperhatikan. Kalimat manakah yang menuliskan angka secara tepat sesuai Pedoman Umum Ejaan Bahasa Indonesia?",
+                img: null, imgDesc: null,
+                options: [
+                    "ibu membeli dua ekor ayam di pasar", 
+                    "ibu membeli 2 ekor ayam di pasar", 
+                    "Ibu membeli dua ekor ayam di pasar", 
+                    "Ibu membeli 2 ekor ayam di pasar"  
+                ],
+                ans: 2,
+                pembahasan: "Angka yang dapat dinyatakan dengan satu atau dua kata (seperti 'dua') sebaiknya ditulis dengan huruf. Jangan lupa kapital di awal kalimat."
+            },
+            {
+                q: "Perhatikan gambar rambu lalu lintas berikut. Kalimat perintah yang tepat dan mewakili rambu tersebut adalah...",
+                img: "gambar/rambu_dilarang_parkir.jpg", 
+                imgDesc: "Keterangan: Gambar rambu lalu lintas lingkaran merah dengan huruf P dicoret silang.",
+                options: [
+                    "jangan memarkir kendaraan di tempat ini", 
+                    "silakan memarkir kendaraan di tempat ini", 
+                    "harap jalankan kendaraan dengan sangat pelan", 
+                    "tolong nyalakan lampu kendaraan di sini"  
+                ],
+                ans: 0,
+                pembahasan: "Rambu huruf P dicoret berarti 'Dilarang Parkir', maka kalimat perintahnya berupa larangan ('jangan...')."
+            },
+            {
+                q: "Kalimat 'Mari kita jaga kebersihan lingkungan sekolah!' termasuk ke dalam jenis kalimat perintah berupa...",
+                img: null, imgDesc: null,
+                options: [
+                    "kalimat ajakan kepada banyak orang", 
+                    "kalimat larangan kepada banyak orang", 
+                    "kalimat permintaan kepada banyak orang", 
+                    "kalimat sindiran kepada banyak orang"  
+                ],
+                ans: 0,
+                pembahasan: "Kata 'Mari' merupakan ciri khas dari kalimat perintah yang bersifat ajakan."
+            },
+            {
+                q: "Saat membaca memindai jadwal penerbangan di bandara untuk mencari jam keberangkatan pesawat ke Bali, hal yang paling difokuskan adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "mencari kata kunci bali dan waktu", 
+                    "membaca semua nama kota dengan lambat", 
+                    "menghafal semua jam keberangkatan secara urut", 
+                    "mencatat jenis pesawat yang sedang parkir"  
+                ],
+                ans: 0,
+                pembahasan: "Membaca memindai (scanning) bertujuan mencari informasi spesifik dengan cepat menggunakan kata kunci."
+            },
+            {
+                q: "Berdasarkan brosur pengumuman kegiatan sekolah di atas, siapakah target peserta utama dari lomba tersebut?",
+                imgDesc: "Keterangan: Gambar brosur bertuliskan 'Lomba Membaca Puisi Antar Kelas 5. Ikuti dan Menangkan Hadiahnya!'",
+                options: [
+                    "seluruh siswa kelas lima sekolah dasar", 
+                    "semua guru bahasa indonesia sekolah dasar", 
+                    "para orang tua wali murid kelas", 
+                    "siswa kelas satu sampai kelas enam"  
+                ],
+                ans: 0,
+                pembahasan: "Brosur secara spesifik menyebutkan lomba diadakan 'Antar Kelas 5', sehingga pesertanya adalah siswa kelas 5."
+            },
+            {
+                q: "Huruf kapital digunakan pada awal kalimat petikan langsung. Manakah contoh kalimat yang menerapkan kaidah tersebut dengan benar?",
+                img: null, imgDesc: null,
+                options: [
+                    "guru berkata, \"kerjakan tugas ini segera.\"", 
+                    "Guru berkata, \"Kerjakan tugas ini segera.\"", 
+                    "guru berkata, \"Kerjakan tugas ini segera.\"", 
+                    "Guru berkata, \"kerjakan tugas ini segera.\""  
+                ],
+                ans: 1,
+                pembahasan: "Awal kalimat utama kapital (Guru). Awal kalimat pada petikan langsung juga harus kapital (Kerjakan)."
+            },
+            {
+                q: "Dalam teks sejarah disebutkan bahwa kemerdekaan Indonesia terjadi pada abad ke-20. Penulisan lambang bilangan tingkat yang benar adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "abad kedua puluh dalam teks sejarah", 
+                    "abad ke dua puluh teks sejarah", 
+                    "abad ke-20 dalam teks bacaan sejarah", 
+                    "abad ke 20 dalam teks sejarah"  
+                ],
+                ans: 2,
+                pembahasan: "Penulisan bilangan tingkat menggunakan angka Arab harus diberi tanda hubung (ke-20)."
+            },
+            {
+                q: "Untuk menemukan arti kata 'karnivora' dalam kamus setebal 500 halaman dengan teknik memindai, langkah pertama yang dilakukan adalah mencari...",
+                img: null, imgDesc: null,
+                options: [
+                    "halaman yang berawalan dengan huruf k", 
+                    "halaman daftar isi di bagian depan", 
+                    "halaman daftar pustaka di bagian belakang", 
+                    "halaman yang memiliki banyak gambar hewan"  
+                ],
+                ans: 0,
+                pembahasan: "Kamus disusun alfabetis, sehingga langkah tercepat memindai adalah langsung menuju kelompok huruf 'K'."
+            },
+            {
+                q: "Jika kamu ingin mengirim surel kepada guru untuk meminta izin tidak masuk karena sakit, bahasa yang sebaiknya digunakan adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "bahasa santai dan menggunakan banyak singkatan", 
+                    "bahasa formal santun dan jelas tujuannya", 
+                    "bahasa daerah agar terlihat lebih akrab", 
+                    "bahasa kiasan supaya guru merasa terkesan"  
+                ],
+                ans: 1,
+                pembahasan: "Surel kepada pihak sekolah (guru) bersifat resmi, sehingga harus menggunakan bahasa formal dan santun."
+            },
+            {
+                q: "Cermati teks berita ini: 'Gempa bumi berkekuatan 5 SR mengguncang wilayah pesisir pada pukul 08.00 pagi.' Kalimat ini merupakan fakta karena...",
+                img: null, imgDesc: null,
+                options: [
+                    "berisi data waktu dan angka pasti", 
+                    "ditulis oleh wartawan yang sangat terkenal", 
+                    "menggunakan bahasa yang indah dan menarik", 
+                    "merupakan kejadian yang belum tentu terjadi"  
+                ],
+                ans: 0,
+                pembahasan: "Fakta ditandai dengan adanya data yang objektif dan terukur, seperti angka skala richter dan waktu kejadian."
+            },
+            {
+                q: "Di bawah ini yang merupakan ciri khas kata yang sering muncul dalam kalimat opini adalah penggunaan kata...",
+                img: null, imgDesc: null,
+                options: [
+                    "sebaiknya, mungkin, dan menurut pandangan saya", 
+                    "telah, sudah, dan pada tahun tersebut", 
+                    "adalah, yaitu, dan merupakan bagian dari", 
+                    "angka, tanggal, dan lokasi kejadian perkara"  
+                ],
+                ans: 0,
+                pembahasan: "Kata 'sebaiknya', 'mungkin', dan 'menurut' menunjukkan sifat subjektivitas yang merupakan ciri dari opini."
+            },
+            {
+                q: "Perhatikan petunjuk pada botol obat ini. Kalimat perintah yang tepat untuk menjelaskan instruksi pemakaian obat tersebut adalah...",
+                img: "gambar/botol_obat.jpg", 
+                imgDesc: "Keterangan: Gambar botol obat sirup dengan ikon sendok dan tulisan '3x sehari'.",
+                options: [
+                    "minumlah obat ini tiga kali sehari", 
+                    "simpanlah obat ini pada tempat dingin", 
+                    "belilah obat ini di apotek terdekat", 
+                    "buanglah obat ini jika sudah kadaluarsa"  
+                ],
+                ans: 0,
+                pembahasan: "Instruksi '3x sehari' bermakna perintah untuk meminum obat tersebut dengan frekuensi tiga kali dalam satu hari."
+            },
+            {
+                q: "Teks eksplanasi seringkali menggunakan pola hubungan sebab-akibat. Konjungsi (kata hubung) yang paling sering digunakan untuk pola tersebut adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "karena, sehingga, dan oleh sebab itu", 
+                    "dan, atau, serta, lalu, kemudian, setelah", 
+                    "meskipun, walaupun, namun, dan akan tetapi", 
+                    "seperti, bagaikan, laksana, dan ibarat kata"  
+                ],
+                ans: 0,
+                pembahasan: "Kata hubung kausalitas (sebab-akibat) meliputi 'karena', 'sebab', 'sehingga', 'oleh karena itu'."
+            },
+            {
+                q: "Syarat utama agar sebuah pengumuman dapat dipahami dengan baik oleh pembaca adalah...",
+                img: null, imgDesc: null,
+                options: [
+                    "memiliki informasi jelas singkat dan padat", 
+                    "dicetak menggunakan kertas yang sangat mahal", 
+                    "ditulis dengan banyak kalimat kiasan indah", 
+                    "ditempel pada tembok yang sangat tinggi"  
+                ],
+                ans: 0,
+                pembahasan: "Pengumuman harus efektif. Bahasa yang digunakan harus jelas, singkat, dan padat agar informasi tidak membingungkan."
+            }
+        ];
+
+        // --- SISTEM PENYIMPANAN LOKAL ---
+        const storageKey = 'history_IND_STS_K5_S2_HOTS';
+        
+        // --- VARIABEL STATE ---
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let userData = { nama: '', kelas: '' };
+        let hasAnswered = false;
+
+        window.onload = () => {
+            renderHistory();
+        };
+
+        function startQuiz() {
+            const namaInput = document.getElementById('nama').value.trim();
+            const kelasInput = document.getElementById('kelas').value.trim();
+            
+            if (!namaInput || !kelasInput) {
+                alert('Mohon isi Nama Lengkap dan Kelas terlebih dahulu.');
+                return;
+            }
+            
+            userData.nama = namaInput;
+            userData.kelas = kelasInput;
+            score = 0;
+            currentIndex = 0;
+            
+            currentQuestions = [...bankSoal].sort(() => Math.random() - 0.5);
+            
+            currentQuestions.forEach(q => {
+                const optionsWithIndex = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                optionsWithIndex.sort(() => Math.random() - 0.5);
+                q.shuffledOptions = optionsWithIndex;
+            });
+
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            const q = currentQuestions[currentIndex];
+            
+            document.getElementById('progressText').textContent = `Soal: ${currentIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('scoreText').textContent = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
+            
+            document.getElementById('questionArea').innerHTML = `<div class="question-text">${currentIndex + 1}. ${q.q}</div>`;
+            
+            const imgArea = document.getElementById('imgArea');
+            if (q.img) {
+                document.getElementById('qImage').src = q.img;
+                document.getElementById('qImageDesc').textContent = q.imgDesc;
+                imgArea.classList.remove('hidden');
+            } else {
+                imgArea.classList.add('hidden');
+            }
+            
+            const optionsArea = document.getElementById('optionsArea');
+            optionsArea.innerHTML = '';
+            
+            q.shuffledOptions.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                const letter = String.fromCharCode(65 + idx); 
+                btn.innerHTML = `<strong>${letter}.</strong> ${opt.text}`;
+                btn.onclick = () => checkAnswer(opt.originalIndex, idx, btn);
+                optionsArea.appendChild(btn);
+            });
+            
+            // PERBAIKAN 3: Menyeragamkan logika memunculkan tombol dengan classList 'hidden'
+            document.getElementById('pembahasanArea').style.display = 'none';
+            
+            if (currentIndex > 0) {
+                document.getElementById('btnPrev').classList.remove('hidden');
+            } else {
+                document.getElementById('btnPrev').classList.add('hidden');
+            }
+            
+            if (currentIndex === currentQuestions.length - 1) {
+                document.getElementById('btnNext').classList.add('hidden');
+                document.getElementById('btnFinish').classList.remove('hidden');
+            } else {
+                document.getElementById('btnNext').classList.remove('hidden');
+                document.getElementById('btnFinish').classList.add('hidden');
+            }
+        }
+
+        function checkAnswer(selectedOriginalIndex, btnIndex, btnElement) {
+            if (hasAnswered) return; 
+            hasAnswered = true;
+            
+            const q = currentQuestions[currentIndex];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach(b => b.disabled = true);
+            
+            if (selectedOriginalIndex === q.ans) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('wrong');
+                const correctBtnIndex = q.shuffledOptions.findIndex(o => o.originalIndex === q.ans);
+                buttons[correctBtnIndex].classList.add('correct');
+            }
+            
+            document.getElementById('scoreText').textContent = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
+            
+            const pembahasanArea = document.getElementById('pembahasanArea');
+            pembahasanArea.innerHTML = `<strong>Pembahasan:</strong><br>${q.pembahasan}`;
+            pembahasanArea.style.display = 'block';
+        }
+
+        function goNext() {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                loadQuestion();
+            }
+        }
+
+        function goPrev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const finalScore = Math.round((score / currentQuestions.length) * 100);
+            const date = new Date();
+            const timeStr = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+            
+            const record = {
+                nama: userData.nama,
+                kelas: userData.kelas,
+                skor: finalScore,
+                waktu: timeStr
+            };
+            
+            let history = JSON.parse(localStorage.getItem(storageKey)) || [];
+            history.push(record);
+            localStorage.setItem(storageKey, JSON.stringify(history));
+            
+            alert(`Ujian Selesai!\nNama: ${userData.nama}\nSkor Anda: ${finalScore}`);
+            
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            
+            document.getElementById('nama').value = '';
+            document.getElementById('kelas').value = '';
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyBody = document.getElementById('historyBody');
+            historyBody.innerHTML = '';
+            
+            let history = JSON.parse(localStorage.getItem(storageKey)) || [];
+            if (history.length === 0) {
+                historyBody.innerHTML = `<tr><td colspan="4">Belum ada data riwayat.</td></tr>`;
+                return;
+            }
+            
+            history.reverse().forEach(row => {
+                historyBody.innerHTML += `
+                    <tr>
+                        <td>${row.nama}</td>
+                        <td>${row.kelas}</td>
+                        <td><strong>${row.skor}</strong></td>
+                        <td>${row.waktu}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
