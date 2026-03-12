@@ -8,19 +8,20 @@
   <link rel="manifest" href="./manifest.json">
   
   <style>
-    /* CSS untuk membuat tombol berada persis di tengah layar */
     body { 
       display: flex; 
+      flex-direction: column; 
       justify-content: center; 
       align-items: center; 
       height: 100vh; 
-      background-color: #f4f7f6; /* Warna background kalem */
+      background-color: #f4f7f6; 
       font-family: sans-serif; 
       margin: 0; 
+      text-align: center;
     }
     
     .btn-instal { 
-      display: none; /* Disembunyikan dulu sampai loading selesai */
+      display: none; 
       background-color: #4CAF50; 
       color: white; 
       padding: 20px 40px; 
@@ -34,13 +35,51 @@
     }
 
     .btn-instal:active {
-      transform: scale(0.95); /* Efek tombol ditekan */
+      transform: scale(0.95); 
     }
 
     .pesan-tunggu { 
       font-size: 18px; 
       color: #666; 
-      text-align: center; 
+      margin-bottom: 20px;
+    }
+
+    #progress-container {
+        width: 80%;
+        max-width: 400px;
+        background-color: #e0e0e0;
+        border-radius: 20px;
+        display: none; 
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #progress-bar {
+        width: 0%;
+        height: 25px;
+        background-color: #4CAF50;
+        border-radius: 20px;
+        text-align: center;
+        line-height: 25px;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        transition: width 0.1s; 
+    }
+
+    #pesan-sukses {
+        display: none; 
+        color: #4CAF50;
+        font-size: 22px;
+        font-weight: bold;
+    }
+    
+    #pesan-sukses span {
+        display: block;
+        margin-top: 10px;
+        font-size: 16px;
+        color: #555;
+        font-weight: normal;
     }
   </style>
 </head>
@@ -50,37 +89,89 @@
   
   <button class="btn-instal" id="tombol-instal">📥 Instal Aplikasi Sekarang</button>
 
+  <div class="pesan-tunggu" id="status-instalasi" style="display: none;">Memasang aplikasi, mohon tunggu...</div>
+  <div id="progress-container">
+      <div id="progress-bar">0%</div>
+  </div>
+
+  <div id="pesan-sukses">
+      ✅ Berhasil Diinstal! 
+      <span>Silakan buka aplikasi SBS dari layar depan HP Anda.</span>
+  </div>
+
   <script>
-    // 1. Wajib mendaftarkan Service Worker agar diakui sebagai PWA
+    // 1. Cek apakah pengguna sudah membuka dari aplikasi yang terinstal (Home Screen)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        // Ganti 'index.html' dengan nama file halaman utama kuis Anda jika berbeda
+        window.location.href = 'index.html'; 
+    }
+
+    // 2. Mendaftarkan Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js');
     }
 
-    // 2. Logika Pemanggil Tombol Instal
     let promptInstalasi;
     const tombolInstal = document.getElementById('tombol-instal');
     const pesanTunggu = document.getElementById('pesan');
+    
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const statusInstalasi = document.getElementById('status-instalasi');
+    const pesanSukses = document.getElementById('pesan-sukses');
 
+    // 3. Set waktu tunggu maksimal 3 detik. Jika tombol instalasi tidak muncul, arahkan ke aplikasi.
+    const fallbackTimeout = setTimeout(() => {
+        pesanTunggu.innerText = 'Aplikasi sudah siap. Mengarahkan ke kuis...';
+        setTimeout(() => {
+            // Ganti 'index.html' dengan nama file halaman utama kuis Anda jika berbeda
+            window.location.href = 'index.html'; 
+        }, 1000);
+    }, 3000);
+
+    // 4. Menangkap event instalasi dari HP
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       promptInstalasi = e;
       
-      // Hilangkan teks loading, munculkan tombol raksasa
+      // Karena HP pengguna mendukung instalasi dan belum diinstal, batalkan pengalihan otomatis!
+      clearTimeout(fallbackTimeout);
+      
       pesanTunggu.style.display = 'none'; 
       tombolInstal.style.display = 'block'; 
     });
 
     tombolInstal.addEventListener('click', async () => {
       if (promptInstalasi) {
-        promptInstalasi.prompt(); // Munculkan pop-up resmi bawaan HP
+        promptInstalasi.prompt(); 
         
         const { outcome } = await promptInstalasi.userChoice;
+        
         if (outcome === 'accepted') {
-          // Ubah tampilan tombol setelah sukses diinstal
-          tombolInstal.innerText = '✅ Berhasil Diinstal! Silakan buka aplikasi SBS dari layar depan.';
-          tombolInstal.style.backgroundColor = '#888'; // Ubah warna jadi abu-abu
-          tombolInstal.style.cursor = 'default';
-          tombolInstal.disabled = true;
+          tombolInstal.style.display = 'none'; 
+          statusInstalasi.style.display = 'block'; 
+          progressContainer.style.display = 'block'; 
+          
+          let width = 0;
+          const interval = setInterval(() => {
+              if (width >= 100) {
+                  clearInterval(interval);
+                  progressContainer.style.display = 'none';
+                  statusInstalasi.style.display = 'none';
+                  pesanSukses.style.display = 'block';
+                  
+                  // Opsional: Langsung arahkan ke kuis 3 detik setelah instalasi sukses
+                  setTimeout(() => {
+                      window.location.href = 'index.html';
+                  }, 3000);
+
+              } else {
+                  width++; 
+                  progressBar.style.width = width + '%';
+                  progressBar.innerHTML = width + '%';
+              }
+          }, 80); // Durasi 8 detik
+          
         }
         promptInstalasi = null;
       }
