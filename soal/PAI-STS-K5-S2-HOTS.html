@@ -116,6 +116,8 @@
             margin-top: 30px;
             border-top: 2px solid var(--light);
             padding-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         table {
@@ -189,8 +191,8 @@
             background-color: #dcdde1;
         }
 
-        .option-btn.correct { background-color: var(--correct); color: white; border-color: var(--correct); }
-        .option-btn.wrong { background-color: var(--wrong); color: white; border-color: var(--wrong); }
+        .option-btn.correct { background-color: var(--correct) !important; color: white !important; border-color: var(--correct) !important; }
+        .option-btn.wrong { background-color: var(--wrong) !important; color: white !important; border-color: var(--wrong) !important; }
 
         .explanation {
             margin-top: 20px;
@@ -229,20 +231,22 @@
         .hidden { display: none; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header id="main-header">
+<body oncontextmenu="return false;"> 
+    <header id="main-header">
         Kode Soal: PAI-STS-K5-S2-HOTS
     </header>
 
     <div class="container">
         <div class="card login-screen" id="login-screen">
             <h1>Selamat Datang di Ujian STS</h1>
+            <p>Pendidikan Agama Islam - Kelas 5</p>
             <div class="input-group">
                 <label for="student-name">Nama Lengkap</label>
-                <input type="text" id="student-name" placeholder="Masukkan nama lengkapmu..." required>
+                <input type="text" id="student-name" placeholder="Masukkan nama lengkapmu..." required autocomplete="off">
             </div>
             <div class="input-group">
                 <label for="student-class">Kelas</label>
-                <input type="text" id="student-class" placeholder="Masukkan kelasmu..." required>
+                <input type="text" id="student-class" placeholder="Masukkan kelasmu..." required autocomplete="off">
             </div>
             
             <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis</button>
@@ -286,16 +290,17 @@
             </div>
 
             <div class="navigation">
-                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()">&#8592; Sebelumnya</button>
+                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()" style="visibility: hidden;">&#8592; Sebelumnya</button>
                 <button class="btn btn-nav" id="btn-next" onclick="nextQuestion()">Selanjutnya &#8594;</button>
+                <button class="btn btn-start hidden" id="btn-finish" onclick="finishQuiz()" style="width: 48%;">Selesai Kuis</button>
             </div>
         </div>
 
         <div class="card login-screen hidden" id="result-screen">
             <h1>Kuis Selesai!</h1>
-            <h2 style="font-size: 3rem; color: var(--correct); margin: 20px 0;" id="final-score">100</h2>
+            <h2 style="font-size: 4rem; color: var(--correct); margin: 20px 0;" id="final-score">100</h2>
             <p id="result-message" style="font-size: 1.2rem;"></p>
-            <button class="btn btn-start" onclick="location.reload()">Selesai & Simpan Skor</button>
+            <button class="btn btn-start" onclick="location.reload()">Kembali ke Halaman Utama</button>
         </div>
     </div>
 
@@ -307,7 +312,7 @@
     <script>
         // Mencegah Copy Paste lewat keyboard shortcut
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'a')) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'a' || e.key === 's')) {
                 e.preventDefault();
             }
         });
@@ -320,7 +325,6 @@
 
         // Data Soal (25 Soal HOTS)
         const rawQuestions = [
-            // Soal 1-5
             {
                 q: "Perhatikan potongan terjemahan Q.S. Ali 'Imran/3: 64 berikut: 'Katakanlah (Muhammad), Wahai Ahli Kitab! Marilah kita menuju kepada satu kalimat (pegangan) yang sama antara kami dan kamu...'. Kalimat yang tepat untuk melanjutkan ayat tersebut adalah...",
                 image: "", caption: "",
@@ -376,7 +380,6 @@
                 ],
                 explanation: "Kalimat tarji' diucapkan saat terkena musibah, maknanya adalah penyerahan diri secara total bahwa kita milik Allah dan akan kembali kepada-Nya."
             },
-            // Soal 6 (Bergambar 1)
             {
                 q: "Perhatikan gambar perilaku berteman di bawah ini! Sikap yang ditunjukkan pada gambar merupakan contoh adab berteman dengan non-muslim yang tepat, karena mereka...",
                 image: "gambar/gambar-toleransi1.jpg", caption: "Gambar 1. Anak-anak berbeda pakaian adat dan agama sedang bermain bersama.",
@@ -388,7 +391,6 @@
                 ],
                 explanation: "Berteman dengan non-muslim dibolehkan dalam hal sosial (muamalah) tanpa membedakan suku/agama, namun tidak boleh dalam urusan akidah/ibadah."
             },
-            // Soal 7-11
             {
                 q: "Pak Ali adalah seorang pedagang yang jujur. Ia yakin bahwa semua perbuatannya, sekecil apapun, akan dicatat dan ditimbang di hari kiamat. Hikmah beriman kepada Hari Akhir yang tercermin dari sikap Pak Ali adalah...",
                 image: "", caption: "",
@@ -400,7 +402,6 @@
                 ],
                 explanation: "Iman kepada hari akhir akan menjadi kontrol diri yang kuat agar selalu berbuat jujur dan amal saleh karena sadar adanya balasan (hisab)."
             },
-            // Soal 8 (Bergambar 2)
             {
                 q: "Berdasarkan ilustrasi gambar persahabatan tersebut, keuntungan berteman tanpa membedakan keyakinan di lingkungan masyarakat adalah...",
                 image: "gambar/gambar-gotongroyong.jpg", caption: "Gambar 2. Warga berbeda etnis bergotong-royong membersihkan lingkungan.",
@@ -445,7 +446,6 @@
                 ],
                 explanation: "Ukhuwah wathaniyah adalah persaudaraan karena satu bangsa/negara, contohnya menghormati simbol negara bersama siswa lain."
             },
-            // Soal 12 (Bergambar 3)
             {
                 q: "Perhatikan ilustrasi timbangan amal perbuatan manusia di bawah ini. Tahapan peristiwa hari akhir yang digambarkan pada ilustrasi tersebut adalah...",
                 image: "gambar/gambar-mizan.jpg", caption: "Gambar 3. Ilustrasi timbangan amal baik dan buruk.",
@@ -457,7 +457,6 @@
                 ],
                 explanation: "Yaumul Mizan adalah hari penimbangan amal perbuatan manusia selama hidup di dunia untuk menentukan tempatnya kelak."
             },
-            // Soal 13-15
             {
                 q: "Negara Indonesia terdiri dari berbagai macam suku, bahasa, dan agama. Sebagai seorang muslim yang baik, cara menyikapi keragaman tersebut agar terwujud persaudaraan sejati adalah...",
                 image: "", caption: "",
@@ -491,7 +490,6 @@
                 ],
                 explanation: "Rusaknya moralitas umat manusia seperti hilangnya kejujuran dan amanah merupakan tanda-tanda kecil (sugra) kiamat."
             },
-            // Soal 16 (Bergambar 4)
             {
                 q: "Perhatikan gambar ilustrasi interaksi sosial berikut. Rasulullah SAW pernah menjenguk tetangga Yahudinya yang sedang sakit meskipun tetangga tersebut sering menyakitinya. Keteladanan yang bisa kita ambil adalah...",
                 image: "gambar/gambar-menjenguk.jpg", caption: "Gambar 4. Ilustrasi menjenguk tetangga sakit.",
@@ -503,7 +501,6 @@
                 ],
                 explanation: "Rasulullah mengajarkan akhlak mulia, bersikap baik dan penuh kasih sayang kepada sesama manusia tanpa memandang perbedaan iman."
             },
-            // Soal 17-24
             {
                 q: "Manakah dari perilaku berikut ini yang bertentangan dengan nilai-nilai ukhuwah dan dapat merusak persaudaraan dalam Islam?",
                 image: "", caption: "",
@@ -592,7 +589,6 @@
                 ],
                 explanation: "Ukhuwah Islamiyah adalah persaudaraan teguh yang diikat oleh kesamaan akidah atau keimanan Islam."
             },
-            // Soal 25 (Bergambar 5)
             {
                 q: "Perhatikan gambar aktivitas ibadah berikut! Hikmah beriman kepada Hari Akhir yang paling memotivasi seseorang untuk rajin beribadah seperti pada gambar adalah keyakinan bahwa...",
                 image: "gambar/gambar-ibadah.jpg", caption: "Gambar 5. Seseorang sedang khusyuk berdoa dan beribadah di masjid.",
@@ -613,7 +609,6 @@
         let userAnswers = [];
         let studentName = "";
         let studentClass = "";
-        const scorePerQuestion = 100 / 25; // 4 point per nomor
 
         // Utility: Shuffle Array
         function shuffleArray(array) {
@@ -640,7 +635,8 @@
                 return;
             }
 
-            history.forEach(item => {
+            // Reverse agar yang terbaru di atas
+            history.reverse().forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${item.date}</td>
@@ -652,6 +648,23 @@
             });
         }
 
+        // --- FUNGSI INTEGRASI HALAMAN REKAP ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let waktuSekarang = new Date().toLocaleString('id-ID'); 
+            
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            
+            riwayatKuis.push(dataBaru);
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
+
         function startQuiz() {
             studentName = document.getElementById('student-name').value.trim();
             studentClass = document.getElementById('student-class').value.trim();
@@ -661,16 +674,17 @@
                 return;
             }
 
-            // Persiapan data
-            questions = shuffleArray(rawQuestions);
-            // Acak opsi jawaban di setiap soal
+            // 3. Reset Variabel Secara Menyeluruh
+            currentQuestionIndex = 0;
+            score = 0;
+
+            // Deep clone agar opsi asli tidak rusak saat diacak berulang kali
+            questions = shuffleArray(JSON.parse(JSON.stringify(rawQuestions)));
             questions.forEach(q => {
                 q.options = shuffleArray(q.options);
             });
             
             userAnswers = new Array(questions.length).fill(null);
-            currentQuestionIndex = 0;
-            score = 0;
 
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
@@ -710,7 +724,6 @@
             q.options.forEach((opt, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
-                // Prefix A, B, C, D
                 const prefix = String.fromCharCode(65 + index);
                 btn.innerText = `${prefix}. ${opt.text}`;
                 
@@ -722,7 +735,7 @@
                         btn.classList.add('wrong');
                     }
                 } else {
-                    btn.onclick = () => selectOption(index, opt.correct);
+                    btn.onclick = () => selectOption(index, opt.correct, btn);
                 }
                 
                 optionsContainer.appendChild(btn);
@@ -733,23 +746,37 @@
             }
 
             // Navigation Buttons
-            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            document.getElementById('btn-prev').style.visibility = currentQuestionIndex === 0 ? "hidden" : "visible";
+            
+            const btnNext = document.getElementById('btn-next');
+            const btnFinish = document.getElementById('btn-finish');
             
             if (currentQuestionIndex === questions.length - 1) {
-                document.getElementById('btn-next').innerText = "Selesai Kuis";
+                btnNext.classList.add('hidden');
+                if (hasAnswered) btnFinish.classList.remove('hidden');
             } else {
-                document.getElementById('btn-next').innerText = "Selanjutnya \u2192";
+                if (hasAnswered) btnNext.classList.remove('hidden');
+                else btnNext.classList.add('hidden');
+                btnFinish.classList.add('hidden');
             }
         }
 
-        function selectOption(selectedIndex, isCorrect) {
+        function selectOption(selectedIndex, isCorrect, btnElement) {
+            // 1. Sistem Flagging: Mencegah tombol diklik ganda (double click)
+            if (userAnswers[currentQuestionIndex] !== null) return;
+
             userAnswers[currentQuestionIndex] = selectedIndex;
             
             if (isCorrect) {
-                score += scorePerQuestion;
+                score += 4; // 25 soal x 4 = 100
+                
+                // 2. Fungsi Pembatas (Limiter): Pastikan skor mentok di 100
+                if (score > 100) score = 100;
             }
 
-            // Update UI
+            document.getElementById('current-score').innerText = score;
+
+            // Update UI warna tombol
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach((btn, index) => {
                 btn.disabled = true;
@@ -760,8 +787,14 @@
                 }
             });
 
-            document.getElementById('current-score').innerText = score;
             document.getElementById('explanation-box').style.display = 'block';
+            
+            // Tampilkan navigasi ke nomor selanjutnya
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('btn-finish').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+            }
         }
 
         function prevQuestion() {
@@ -772,44 +805,54 @@
         }
 
         function nextQuestion() {
-            if (userAnswers[currentQuestionIndex] === null) {
-                alert("Silakan pilih jawaban terlebih dahulu sebelum melanjutkan!");
-                return;
-            }
-
+            if (userAnswers[currentQuestionIndex] === null) return;
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 showQuestion();
-            } else {
-                finishQuiz();
             }
         }
 
         function finishQuiz() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            
-            const finalScoreEl = document.getElementById('final-score');
-            finalScoreEl.innerText = score;
+            if(confirm("Apakah kamu yakin ingin menyelesaikan ujian ini?")) {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+                
+                // 4. Perhitungan Berbasis Persentase (Double Check System)
+                let jumlahJawabanBenar = 0;
+                questions.forEach((q, idx) => {
+                    let answeredIdx = userAnswers[idx];
+                    if (answeredIdx !== null && q.options[answeredIdx].correct) {
+                        jumlahJawabanBenar++;
+                    }
+                });
 
-            let msg = "";
-            if (score >= 80) { msg = "Luar Biasa! Pemahamanmu sangat baik."; finalScoreEl.style.color = "var(--correct)"; }
-            else if (score >= 60) { msg = "Bagus! Terus tingkatkan belajarmu."; finalScoreEl.style.color = "var(--secondary)"; }
-            else { msg = "Tetap semangat! Jangan menyerah untuk terus belajar."; finalScoreEl.style.color = "var(--wrong)"; }
-            document.getElementById('result-message').innerText = msg;
+                let persentaseSkor = Math.round((jumlahJawabanBenar / questions.length) * 100);
+                let skorAkhir = Math.min(persentaseSkor, 100);
 
-            saveScore();
+                const finalScoreEl = document.getElementById('final-score');
+                finalScoreEl.innerText = skorAkhir;
+
+                let msg = "";
+                if (skorAkhir >= 80) { msg = "Luar Biasa! Pemahamanmu sangat baik."; finalScoreEl.style.color = "var(--correct)"; }
+                else if (skorAkhir >= 60) { msg = "Bagus! Terus tingkatkan belajarmu."; finalScoreEl.style.color = "var(--secondary)"; }
+                else { msg = "Tetap semangat! Jangan menyerah untuk terus belajar."; finalScoreEl.style.color = "var(--wrong)"; }
+                document.getElementById('result-message').innerText = msg;
+
+                // Eksekusi Simpan Data
+                simpanHasilKuis(studentName, studentClass, "PAI STS-K5", skorAkhir); // Rekap Global
+                saveScore(skorAkhir); // Rekap Internal Halaman
+            }
         }
 
-        function saveScore() {
+        function saveScore(skorAkhir) {
             const today = new Date();
-            const dateStr = today.toLocaleDateString('id-ID') + " " + today.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+            const dateStr = today.toLocaleString('id-ID'); // Format konsisten dengan file lain
             
             const record = {
                 date: dateStr,
                 name: studentName,
                 cls: studentClass,
-                score: score
+                score: skorAkhir
             };
 
             let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];

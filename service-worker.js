@@ -1,6 +1,9 @@
-const CACHE_NAME = 'sts-kelas-5-v1';
+// Nama cache versi terbaru (v2)
+const CACHE_NAME = 'sts-kelas-5-v2';
+
 const urlsToCache = [
  './index.html',
+ './rekap.html',
   './icon-512.png',
   './baner-sbs.png',
   
@@ -55,7 +58,7 @@ const urlsToCache = [
   '/soal/gambar/gambar-ibadah.jpg'
 ];
 
-// Menyimpan file ke cache saat aplikasi pertama kali dibuka
+// Menyimpan file ke cache saat aplikasi pertama kali dibuka (atau saat ganti versi)
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -63,6 +66,27 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Memaksa service worker baru untuk langsung mengontrol aplikasi
+  self.skipWaiting();
+});
+
+// FITUR PENTING: Menghapus cache lama (seperti v1) agar memori tidak penuh
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          // Jika nama cache tidak sama dengan 'sts-kelas-5-v2', maka hapus!
+          if (cacheName !== CACHE_NAME) {
+            console.log('Service Worker: Menghapus cache lama', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  // Memastikan service worker langsung aktif tanpa harus reload dua kali
+  self.clients.claim();
 });
 
 // Mengambil file dari cache saat aplikasi berjalan offline
@@ -76,5 +100,4 @@ self.addEventListener('fetch', event => {
         return fetch(event.request); // Ambil dari internet jika tidak ada di cache
       })
   );
-
 });

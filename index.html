@@ -119,6 +119,7 @@
         .btn-binggris { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
         .btn-bjawa { background: linear-gradient(135deg, #e67e22, #d35400); }
         .btn-pjok { background: linear-gradient(135deg, #34495e, #2c3e50); }
+        .btn-rekap { background: linear-gradient(135deg, #2ecc71, #27ae60); }
 
         /* Footer */
         footer {
@@ -142,11 +143,41 @@
             text-decoration: underline;
         }
 
+        /* Gaya untuk Tombol Update Notifikasi (Melayang) */
+        #btn-update-app {
+            display: none; /* Disembunyikan secara default */
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #E91E63; 
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 9999;
+            animation: munculDariBawah 0.5s ease-out;
+        }
+
+        #btn-update-app:hover {
+            background-color: #C2185B;
+        }
+
+        @keyframes munculDariBawah {
+            from { bottom: -50px; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
         /* Responsiveness untuk layar kecil (HP) */
         @media (max-width: 600px) {
             header h1 { font-size: 1.8rem; }
             header h2 { font-size: 1.2rem; }
             .container { margin: 15px; padding: 20px; }
+            #btn-update-app { width: 90%; text-align: center; } /* Lebar tombol update di HP */
         }
     </style>
 </head>
@@ -172,6 +203,7 @@
             <a href="soal/ENG-STS-K5-S2-HOTS.html" class="btn btn-binggris">Bahasa Inggris</a>
             <a href="soal/JWA-STS-K5-S2-HOTS.html" class="btn btn-bjawa">Bahasa Jawa</a>
             <a href="soal/PJOK-STS-K5-S2-HOTS.html" class="btn btn-pjok">PJOK</a>
+            <a href="rekap.html" class="btn btn-rekap">REKAP</a>
         </div>
     </div>
 
@@ -181,5 +213,28 @@
         <a href="https://lynk.id/smartbanksoal" target="_blank">https://lynk.id/smartbanksoal</a></p>
     </footer>
 
+    <button id="btn-update-app" onclick="window.location.reload(true)">
+        🚀 Ada Update Soal Baru! Klik untuk Memperbarui
+    </button>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker terdaftar dengan sukses.');
+                    })
+                    .catch(error => {
+                        console.log('Pendaftaran Service Worker gagal:', error);
+                    });
+            });
+
+            // Mendeteksi jika ada Service Worker versi baru yang mengambil alih
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                // Tampilkan tombol update melayang
+                document.getElementById('btn-update-app').style.display = 'block';
+            });
+        }
+    </script>
 </body>
 </html>

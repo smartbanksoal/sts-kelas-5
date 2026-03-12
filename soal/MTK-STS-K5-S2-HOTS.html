@@ -56,7 +56,9 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
+            outline: none;
         }
+        .input-group input:focus { border-color: var(--primary); }
         .btn {
             padding: 12px 25px;
             border: none;
@@ -110,9 +112,9 @@
             text-align: left;
             transition: 0.2s;
         }
-        .option-btn:hover:not(:disabled) { background: #e2e2e2; }
-        .option-btn.correct { background: var(--correct); color: white; border-color: var(--correct); }
-        .option-btn.wrong { background: var(--wrong); color: white; border-color: var(--wrong); }
+        .option-btn:hover:not(:disabled) { background: #e2e2e2; border-color: #bbb; }
+        .option-btn.correct { background: var(--correct) !important; color: white !important; border-color: var(--correct) !important; }
+        .option-btn.wrong { background: var(--wrong) !important; color: white !important; border-color: var(--wrong) !important; }
         .option-btn:disabled { cursor: not-allowed; }
         
         .explanation-box {
@@ -123,6 +125,7 @@
             border-left: 5px solid var(--correct);
             border-radius: 5px;
             font-size: 15px;
+            line-height: 1.4;
         }
         .navigation-box { display: flex; justify-content: space-between; margin-top: 20px; }
 
@@ -148,10 +151,10 @@
             <h2>✨ Kuis Cerdas Matematika ✨</h2>
             <p>Sumatif Tengah Semester 2 - Kelas 5</p>
             <div class="input-group">
-                <input type="text" id="studentName" placeholder="Masukkan Nama Lengkap" autocomplete="off">
+                <input type="text" id="studentName" placeholder="Masukkan Nama Lengkap" autocomplete="off" required>
             </div>
             <div class="input-group">
-                <input type="text" id="studentClass" placeholder="Masukkan Kelas" autocomplete="off">
+                <input type="text" id="studentClass" placeholder="Masukkan Kelas" autocomplete="off" required>
             </div>
             <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis 🚀</button>
             <button class="btn btn-home" onclick="window.location.href='../index.html'">🏠 Kembali ke Home</button>
@@ -178,9 +181,9 @@
             <div class="explanation-box" id="explanationBox"></div>
             
             <div class="navigation-box">
-                <button class="btn btn-nav" id="btnPrev" onclick="prevQuestion()">⬅️ Sebelumnya</button>
+                <button class="btn btn-nav" id="btnPrev" onclick="prevQuestion()" style="display:none;">⬅️ Sebelumnya</button>
                 <button class="btn btn-nav" id="btnNext" onclick="nextQuestion()" style="display:none;">Selanjutnya ➡️</button>
-                <button class="btn btn-start" id="btnFinish" onclick="finishQuiz()" style="display:none;">Selesaikan Kuis 🏁</button>
+                <button class="btn btn-start" id="btnFinish" onclick="finishQuiz()" style="display:none; background-color: var(--correct);">Selesaikan Kuis 🏁</button>
             </div>
         </div>
 
@@ -210,7 +213,7 @@
         // Setup Footer Year
         document.getElementById('currentYear').innerText = new Date().getFullYear();
 
-        // Data Bank Soal (25 Soal, HOTS, Jumlah kata dalam opsi selalu sama)
+        // Data Bank Soal (25 Soal, HOTS)
         const bankSoal = [
             { q: "Titik pertemuan dua sinar garis yang membentuk sebuah sudut dinamakan...", img: "", alt: "", options: ["Titik sudut", "Garis sudut", "Ruas sudut", "Kaki sudut"], answer: "Titik sudut", explanation: "Titik sudut adalah pangkal atau titik temu dari dua sinar garis." },
             { q: "Perhatikan gambar segitiga yang terpotong pojoknya. Berapakah sisa sudut potongannya?", img: "gambar/soal2-segitiga-sudut.jpg", alt: "Gambar segitiga sembarang dengan satu sudut dicari", options: ["40°", "50°", "60°", "70°"], answer: "60°", explanation: "Jumlah sudut segitiga adalah 180°. Jika diketahui dua sudut, sudut ketiga adalah 180° dikurangi jumlah keduanya." },
@@ -260,11 +263,32 @@
             const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
             const tbody = document.getElementById("historyBody");
             tbody.innerHTML = "";
-            history.forEach(h => {
-                tbody.innerHTML += `<tr><td>${h.name}</td><td>${h.class}</td><td>${h.time}</td><td>${h.score}</td></tr>`;
-            });
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4">Belum ada data riwayat.</td></tr>`;
+            } else {
+                history.forEach(h => {
+                    tbody.innerHTML += `<tr><td>${h.name}</td><td>${h.class}</td><td>${h.time}</td><td><strong>${h.score}</strong></td></tr>`;
+                });
+            }
         }
         window.onload = loadHistory;
+
+        // --- FUNGSI INTEGRASI HALAMAN REKAP ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let waktuSekarang = new Date().toLocaleString('id-ID'); 
+            
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            
+            riwayatKuis.push(dataBaru);
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
 
         function startQuiz() {
             const name = document.getElementById("studentName").value.trim();
@@ -273,20 +297,23 @@
 
             studentData = { name, class: cls };
             
-            // Acak kemunculan soal
+            // 3. Reset Variabel Secara Menyeluruh
+            currentIdx = 0;
+            score = 0;
+            
+            // Acak kemunculan soal & pastikan semua jawaban ter-reset (null)
             selectedQuestions = shuffleArray([...bankSoal]).map(q => {
                 return {
                     ...q,
                     shuffledOptions: shuffleArray([...q.options]),
-                    userAnswer: null,
+                    userAnswer: null, 
                     isCorrect: false
                 };
             });
 
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("quiz-screen").style.display = "block";
-            currentIdx = 0;
-            score = 0;
+            
             updateScoreDisplay();
             renderQuestion();
         }
@@ -350,12 +377,21 @@
 
         function selectAnswer(selectedOpt, btnElement) {
             const q = selectedQuestions[currentIdx];
+            
+            // 1. Sistem Flagging: Cegah klik dobel jika soal ini sudah terjawab
+            if (q.userAnswer !== null) return;
+            
             q.userAnswer = selectedOpt;
             
             // Cek benar/salah
             if (selectedOpt === q.answer) {
                 q.isCorrect = true;
-                score += (100 / selectedQuestions.length);
+                score += 4; // 25 soal x 4 = 100
+                
+                // 2. Fungsi Pembatas (Limiter)
+                if (score > 100) {
+                    score = 100;
+                }
             }
             updateScoreDisplay();
             renderQuestion(); // Render ulang untuk efek warna & pembahasan
@@ -369,13 +405,26 @@
         function nextQuestion() { if (currentIdx < selectedQuestions.length - 1) { currentIdx++; renderQuestion(); } }
 
         function finishQuiz() {
-            const finalScore = Math.round(score);
+            // 4. Perhitungan Berbasis Persentase (Validasi Ganda)
+            let jawabanBenar = 0;
+            selectedQuestions.forEach(q => {
+                if (q.userAnswer === q.answer) {
+                    jawabanBenar++;
+                }
+            });
+            
+            let persentaseSkor = Math.round((jawabanBenar / selectedQuestions.length) * 100);
+            let finalScore = Math.min(persentaseSkor, 100); // Limit absolut akhir
+            
+            // Simpan Ke Data Global Rekap (Javascript Integrasi)
+            simpanHasilKuis(studentData.name, studentData.class, "Matematika STS-K5", finalScore);
+
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
             document.getElementById("displayName").innerText = studentData.name;
             document.getElementById("finalScoreDisplay").innerText = finalScore;
 
-            // Simpan ke local storage terisolasi
+            // Simpan ke local storage terisolasi halaman ini
             const history = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
             const timeStr = new Date().toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" });
             history.unshift({ name: studentData.name, class: studentData.class, time: timeStr, score: finalScore });

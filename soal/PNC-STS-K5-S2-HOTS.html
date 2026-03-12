@@ -205,15 +205,15 @@
         }
 
         .option-btn.correct {
-            background-color: var(--correct);
-            color: white;
-            border-color: var(--correct);
+            background-color: var(--correct) !important;
+            color: white !important;
+            border-color: var(--correct) !important;
         }
 
         .option-btn.incorrect {
-            background-color: var(--incorrect);
-            color: white;
-            border-color: var(--incorrect);
+            background-color: var(--incorrect) !important;
+            color: white !important;
+            border-color: var(--incorrect) !important;
         }
 
         /* Explanation & Navigation */
@@ -257,11 +257,11 @@
             <h2>Masuk ke Kuis</h2>
             <div class="input-group">
                 <label for="userName">Nama Lengkap:</label>
-                <input type="text" id="userName" placeholder="Masukkan nama lengkap Anda..." required>
+                <input type="text" id="userName" placeholder="Masukkan nama lengkap Anda..." required autocomplete="off">
             </div>
             <div class="input-group">
                 <label for="userClass">Kelas:</label>
-                <input type="text" id="userClass" placeholder="Masukkan kelas Anda..." required>
+                <input type="text" id="userClass" placeholder="Masukkan kelas Anda..." required autocomplete="off">
             </div>
             <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis</button>
             <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
@@ -275,7 +275,7 @@
         <div id="quizScreen" class="quiz-screen">
             <div class="quiz-header">
                 <span id="questionCounter">Soal 1 / 25</span>
-                <span id="currentScore">Skor Sementara: 0</span>
+                <span id="currentScore" style="color: var(--primary);">Skor Sementara: 0</span>
             </div>
             <div id="imageContainer"></div>
             <div class="question-text" id="questionText">Memuat soal...</div>
@@ -290,9 +290,9 @@
 
         <div id="resultScreen" class="result-screen">
             <h2>Kuis Selesai!</h2>
-            <h1 style="color: var(--primary); font-size: 3rem;" id="finalScoreDisplay">0</h1>
-            <p id="resultMessage"></p>
-            <button class="btn btn-start" onclick="location.reload()">Selesai & Simpan</button>
+            <h1 style="color: var(--correct); font-size: 4rem; margin: 20px 0;" id="finalScoreDisplay">0</h1>
+            <p id="resultMessage" style="font-size: 1.2rem;"></p>
+            <button class="btn btn-start" onclick="location.reload()">Selesai & Kembali</button>
         </div>
     </div>
 
@@ -312,7 +312,6 @@
         // Data Soal berdasarkan Kisi-Kisi (25 Soal, 5 Bergambar, Opsi Pilihan Jawaban jumlah kata SAMA per soal)
         const quizData = [
             {
-                // Indikator 1: Menentukan sikap yang tepat terhadap keberagaman budaya
                 question: "Saat menonton festival budaya yang berbeda dari asalmu, sikap terbaik yang mencerminkan penghargaan adalah...",
                 options: [
                     "Menonton acara dengan tenang",
@@ -324,7 +323,6 @@
                 explanation: "Menghargai keberagaman berarti menikmati dan menghormati pertunjukan tersebut dengan tenang."
             },
             {
-                // Indikator 2: Menentukan asal lagu daerah
                 question: "Lagu 'Ampar-Ampar Pisang' merupakan warisan budaya lisan yang menceritakan kebiasaan masyarakat menjemur pisang. Lagu ini berasal dari...",
                 options: [
                     "Provinsi Kalimantan Selatan",
@@ -336,7 +334,6 @@
                 explanation: "Lagu daerah Ampar-Ampar Pisang berasal dari Kalimantan Selatan."
             },
             {
-                // Indikator 3: Menentukan asal rumah adat dari ciri khas
                 question: "Rumah adat beratap tanduk kerbau mencerminkan nilai luhur masyarakat setempat. Rumah adat Gadang ini dibangun di...",
                 options: [
                     "Daerah Provinsi Sumatra Barat",
@@ -348,7 +345,6 @@
                 explanation: "Rumah Gadang dengan ciri khas atap melengkung menyerupai tanduk kerbau berasal dari Sumatra Barat."
             },
             {
-                // Indikator 4: Memilih tindakan pelestarian
                 question: "Globalisasi membawa budaya asing dengan cepat. Tindakan yang paling tepat untuk menjaga kelestarian budaya lokal adalah...",
                 options: [
                     "Mempelajari tarian daerah sendiri",
@@ -360,7 +356,6 @@
                 explanation: "Mempelajari dan mempraktikkan budaya lokal adalah tindakan nyata untuk melestarikannya."
             },
             {
-                // Indikator 5: Menentukan asal suku bangsa
                 question: "Suku Asmat terkenal dengan keahlian mengukir kayu yang sangat indah. Suku ini mendiami wilayah bagian timur, yaitu...",
                 options: [
                     "Wilayah pedalaman Pulau Papua",
@@ -372,7 +367,6 @@
                 explanation: "Suku Asmat merupakan salah satu suku asli yang mendiami wilayah Papua."
             },
             {
-                // Indikator 6: Menjelaskan tujuan mempelajari budaya
                 question: "Sekolah mengadakan ekstrakurikuler membatik bagi seluruh siswa. Tujuan utama dari kegiatan pembelajaran budaya ini adalah...",
                 options: [
                     "Menjaga warisan leluhur bangsa",
@@ -384,7 +378,6 @@
                 explanation: "Ekstrakurikuler seni membatik bertujuan mengenalkan dan menjaga warisan leluhur budaya bangsa."
             },
             {
-                // Indikator 7: Mengidentifikasi alat musik (BERGAMBAR 1)
                 image: "gambar/gamelan.jpg",
                 imageCaption: "Alat Musik Gamelan",
                 question: "Berdasarkan gambar alat musik tradisional di atas, kesenian yang dimainkan secara berkelompok ini berasal dari...",
@@ -398,7 +391,6 @@
                 explanation: "Gamelan merupakan ensambel musik tradisional yang banyak berkembang di Jawa Tengah, Yogyakarta, dan Jawa Timur."
             },
             {
-                // Indikator 8: Menunjukkan sikap menghargai
                 question: "Saat temanmu sedang membawakan tarian daerahnya di panggung sekolah, tindakan yang mencerminkan rasa hormat adalah...",
                 options: [
                     "Memberikan tepuk tangan meriah",
@@ -410,7 +402,6 @@
                 explanation: "Memberikan apresiasi berupa tepuk tangan adalah wujud sikap menghargai pementasan budaya."
             },
             {
-                // Indikator 9: Mengidentifikasi unsur budaya
                 question: "Kekayaan budaya Indonesia sangat beragam. Di bawah ini yang termasuk dalam unsur keragaman budaya bangsa adalah...",
                 options: [
                     "Bahasa, tarian, dan rumah",
@@ -422,7 +413,6 @@
                 explanation: "Unsur budaya mencakup hasil cipta, rasa, dan karsa manusia seperti bahasa, kesenian (tarian), dan arsitektur (rumah adat)."
             },
             {
-                // Indikator 10: Menjelaskan manfaat budaya
                 question: "Mengenal berbagai macam kebudayaan nusantara memberikan dampak positif bagi diri kita. Salah satu manfaat utamanya adalah...",
                 options: [
                     "Menumbuhkan rasa cinta tanah-air",
@@ -434,7 +424,6 @@
                 explanation: "Mempelajari budaya memupuk rasa bangga dan menumbuhkan rasa cinta yang kuat terhadap tanah air Indonesia."
             },
             {
-                // Indikator 11: Menentukan cara pelestarian
                 question: "Budaya lokal terancam punah jika tidak dirawat. Tindakan nyata yang bisa dilakukan siswa untuk melestarikannya adalah...",
                 options: [
                     "Ikut serta festival budaya",
@@ -446,7 +435,6 @@
                 explanation: "Berpartisipasi aktif dalam kegiatan atau festival budaya merupakan cara melestarikan kebudayaan tersebut."
             },
             {
-                // Indikator 12: Menunjukkan sikap toleransi
                 question: "Indonesia terdiri dari berbagai macam suku bangsa. Sikap toleransi yang harus kita kembangkan di masyarakat adalah...",
                 options: [
                     "Bergaul tanpa membedakan suku",
@@ -458,7 +446,6 @@
                 explanation: "Toleransi berarti menerima perbedaan dan bergaul dengan siapa saja tanpa membedakan latar belakang sukunya."
             },
             {
-                // Indikator 13: Mengidentifikasi seni pertunjukan (BERGAMBAR 2)
                 image: "gambar/wayang.jpg",
                 imageCaption: "Pertunjukan Wayang Kulit",
                 question: "Perhatikan gambar pertunjukan bayangan di atas. Kesenian tradisional yang menceritakan kisah epik pewayangan ini disebut...",
@@ -472,7 +459,6 @@
                 explanation: "Wayang kulit adalah seni pertunjukan tradisional berupa drama bayangan dari kulit hewan."
             },
             {
-                // Indikator 14: Menjelaskan peran sekolah
                 question: "Sekolah memiliki peran penting dalam pelestarian budaya. Kegiatan yang mendukung peran tersebut di lingkungan sekolah adalah...",
                 options: [
                     "Mengadakan lomba tari tradisional",
@@ -484,7 +470,6 @@
                 explanation: "Lomba tari antar kelas atau sekolah merupakan wadah yang sangat baik untuk melestarikan budaya di sekolah."
             },
             {
-                // Indikator 15: Mengidentifikasi nilai positif
                 question: "Keberagaman budaya bukan menjadi alasan perpecahan. Nilai positif yang terkandung dalam keberagaman budaya bangsa kita adalah...",
                 options: [
                     "Mempererat tali persaudaraan bangsa",
@@ -496,7 +481,6 @@
                 explanation: "Dengan semboyan Bhinneka Tunggal Ika, keberagaman berfungsi mempererat ikatan persaudaraan sebangsa."
             },
             {
-                // Indikator 16: Menganalisis persiapan pementasan
                 question: "Menjelang pentas seni, panitia menemui banyak perbedaan pendapat terkait konsep acara. Sikap terbaik untuk menyelesaikannya adalah...",
                 options: [
                     "Mengadakan musyawarah mencapai mufakat",
@@ -508,7 +492,6 @@
                 explanation: "Musyawarah mufakat adalah ciri khas penyelesaian masalah yang sesuai dengan nilai-nilai budaya dan Pancasila."
             },
             {
-                // Indikator 17: Menganalisis peran media
                 question: "Di era digital saat ini, pengenalan budaya ke luar negeri dapat dilakukan dengan cepat melalui media interaktif, yaitu...",
                 options: [
                     "Mengunggah video di internet",
@@ -520,7 +503,6 @@
                 explanation: "Internet dan media sosial merupakan sarana yang paling cepat dan luas jangkauannya untuk promosi budaya."
             },
             {
-                // Indikator 18: Menganalisis dampak positif
                 question: "Adanya berbagai macam tarian, makanan, dan rumah adat menjadikan Indonesia unik. Dampak positif keunikan tersebut adalah...",
                 options: [
                     "Menarik minat wisatawan mancanegara",
@@ -532,7 +514,6 @@
                 explanation: "Keunikan ragam budaya Indonesia menjadi magnet utama pariwisata yang menarik wisatawan mancanegara."
             },
             {
-                // Indikator 19: Menilai kebenaran pernyataan (Ubah ke PG)
                 question: "Suku bangsa di Indonesia tersebar di ribuan pulau. Pernyataan yang paling tepat menggambarkan keragaman ini adalah...",
                 options: [
                     "Setiap daerah memiliki keunikan",
@@ -544,7 +525,6 @@
                 explanation: "Setiap suku mendiami wilayah tertentu dan mengembangkan kebudayaan yang unik sesuai lingkungannya."
             },
             {
-                // Indikator 20: Menilai manfaat budaya (Ubah ke PG)
                 question: "Budaya daerah yang beragam dapat disatukan dalam bingkai persatuan nasional. Dampak nyata dari persatuan budaya ini adalah...",
                 options: [
                     "Terciptanya kerukunan hidup masyarakat",
@@ -556,7 +536,6 @@
                 explanation: "Apabila keragaman disikapi dengan rasa persatuan, maka akan tercipta kehidupan bermasyarakat yang rukun dan damai."
             },
             {
-                // Indikator 21: Menganalisis sikap sosial (Ubah ke PG)
                 question: "Seorang siswa mengejek logat bahasa daerah temannya yang baru pindah. Tindakan tersebut sangat tidak sesuai karena...",
                 options: [
                     "Melanggar nilai persatuan bangsa",
@@ -568,7 +547,6 @@
                 explanation: "Mengejek budaya orang lain berarti tidak menghargai keberagaman dan dapat merusak persatuan."
             },
             {
-                // Indikator 22: Mengidentifikasi asal tari (Ubah ke PG) (BERGAMBAR 3)
                 image: "gambar/tari_saman.jpg",
                 imageCaption: "Tari Saman",
                 question: "Tari Saman pada gambar di atas dikenal dengan gerakan tangan yang sangat cepat dan kompak. Tarian ini berasal dari...",
@@ -582,7 +560,6 @@
                 explanation: "Tari Saman adalah warisan budaya suku Gayo yang berasal dari provinsi Aceh."
             },
             {
-                // Indikator 23: Menjelaskan peran generasi muda (Ubah ke PG)
                 question: "Sebagai generasi penerus bangsa, kita memiliki tanggung jawab besar terhadap budaya lokal. Peran penting generasi muda adalah...",
                 options: [
                     "Mempelajari dan mewariskan budaya",
@@ -594,7 +571,6 @@
                 explanation: "Generasi muda bertugas sebagai pewaris yang harus mempelajari, mempraktikkan, dan mengenalkan budaya bangsanya."
             },
             {
-                // Indikator 24: Mengidentifikasi budaya kuliner (Ubah ke PG) (BERGAMBAR 4)
                 image: "gambar/rendang.jpg",
                 imageCaption: "Makanan Khas Rendang",
                 question: "Makanan tradisional pada gambar di atas berbahan dasar daging sapi dan santan. Makanan khas Rendang ini berasal dari...",
@@ -608,7 +584,6 @@
                 explanation: "Rendang merupakan masakan daging yang berasal dari Minangkabau, Sumatra Barat."
             },
             {
-                // Indikator 25: Menganalisis dampak sosial (Ubah ke PG) (BERGAMBAR 5)
                 image: "gambar/gotong_royong.jpg",
                 imageCaption: "Kegiatan Gotong Royong",
                 question: "Gambar di atas menunjukkan warga beda suku bergotong royong. Dampak sosial dari kegiatan kerja sama saling membantu ini adalah...",
@@ -627,7 +602,6 @@
         let currentQuestionIndex = 0;
         let score = 0;
         let userData = { name: '', class: '' };
-        let hasAnsweredCurrent = false;
 
         // Inisialisasi Riwayat
         function loadHistory() {
@@ -644,7 +618,23 @@
                 </div>`
             ).join('');
         }
-        loadHistory();
+        
+        window.onload = loadHistory;
+
+        // --- FUNGSI INTEGRASI REKAP ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let waktuSekarang = new Date().toLocaleString('id-ID'); 
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            riwayatKuis.push(dataBaru);
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
 
         // Utilitas Shuffle Array
         function shuffleArray(array) {
@@ -657,8 +647,8 @@
         }
 
         function startQuiz() {
-            const name = document.getElementById('userName').value;
-            const userClass = document.getElementById('userClass').value;
+            const name = document.getElementById('userName').value.trim();
+            const userClass = document.getElementById('userClass').value.trim();
 
             if (!name || !userClass) {
                 alert('Silakan isi Nama dan Kelas terlebih dahulu!');
@@ -669,26 +659,26 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('quizScreen').style.display = 'block';
 
-            // Acak urutan soal
-            currentQuestions = shuffleArray(quizData).map(q => {
-                // Acak opsi jawaban dan ingat index jawaban benarnya
+            // 3. Reset Variabel Secara Menyeluruh
+            currentQuestionIndex = 0;
+            score = 0;
+
+            // Deep Clone dan Acak urutan soal beserta opsinya
+            currentQuestions = shuffleArray(JSON.parse(JSON.stringify(quizData))).map(q => {
                 const correctText = q.options[q.answer];
                 const shuffledOptions = shuffleArray(q.options);
                 const newAnswerIndex = shuffledOptions.indexOf(correctText);
                 return { ...q, options: shuffledOptions, answer: newAnswerIndex, userAnswer: null };
             });
 
-            currentQuestionIndex = 0;
-            score = 0;
             loadQuestion();
         }
 
         function loadQuestion() {
-            hasAnsweredCurrent = false;
             const q = currentQuestions[currentQuestionIndex];
             
             document.getElementById('questionCounter').innerText = `Soal ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
-            document.getElementById('currentScore').innerText = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
+            document.getElementById('currentScore').innerText = `Skor Sementara: ${score}`;
             
             // Render Gambar
             const imgContainer = document.getElementById('imageContainer');
@@ -703,21 +693,23 @@
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
             
+            const hasAnsweredCurrent = q.userAnswer !== null;
+
             q.options.forEach((opt, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index, btn);
+                btn.innerText = String.fromCharCode(65 + index) + ". " + opt;
                 
                 // Jika sudah pernah dijawab (saat prev/next), tampilkan state sebelumnya
-                if (q.userAnswer !== null) {
+                if (hasAnsweredCurrent) {
                     btn.disabled = true;
                     if (index === q.answer) {
                         btn.classList.add('correct');
                     } else if (index === q.userAnswer) {
                         btn.classList.add('incorrect');
                     }
-                    hasAnsweredCurrent = true;
+                } else {
+                    btn.onclick = () => checkAnswer(index, btn);
                 }
                 
                 optionsContainer.appendChild(btn);
@@ -725,21 +717,22 @@
 
             // Tampilkan penjelasan jika sudah dijawab
             const explanationBox = document.getElementById('explanationText');
-            if (q.userAnswer !== null) {
+            if (hasAnsweredCurrent) {
                 explanationBox.innerHTML = `<strong>Pembahasan:</strong> ${q.explanation}`;
                 explanationBox.style.display = 'block';
             } else {
                 explanationBox.style.display = 'none';
             }
 
-            updateNavButtons();
+            updateNavButtons(hasAnsweredCurrent);
         }
 
         function checkAnswer(selectedIndex, btnElement) {
-            if (hasAnsweredCurrent) return;
-            hasAnsweredCurrent = true;
-
             const q = currentQuestions[currentQuestionIndex];
+            
+            // 1. Sistem Flagging: Pastikan soal belum dijawab untuk mencegah klik ganda
+            if (q.userAnswer !== null) return;
+            
             q.userAnswer = selectedIndex;
 
             const allBtns = document.querySelectorAll('.option-btn');
@@ -747,31 +740,36 @@
 
             if (selectedIndex === q.answer) {
                 btnElement.classList.add('correct');
-                score++;
+                score += 4; // 25 soal x 4 = 100
+                
+                // 2. Fungsi Pembatas (Limiter): Mencegah skor menembus 100
+                if (score > 100) score = 100;
             } else {
                 btnElement.classList.add('incorrect');
                 allBtns[q.answer].classList.add('correct');
             }
 
-            document.getElementById('currentScore').innerText = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
+            document.getElementById('currentScore').innerText = `Skor Sementara: ${score}`;
             
             const explanationBox = document.getElementById('explanationText');
             explanationBox.innerHTML = `<strong>Pembahasan:</strong> ${q.explanation}`;
             explanationBox.style.display = 'block';
 
-            updateNavButtons();
+            updateNavButtons(true);
         }
 
-        function updateNavButtons() {
+        function updateNavButtons(isAnswered) {
             document.getElementById('prevBtn').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
             const nextBtn = document.getElementById('nextBtn');
             
-            if (hasAnsweredCurrent) {
+            if (isAnswered) {
                 nextBtn.style.display = 'block';
                 if (currentQuestionIndex === currentQuestions.length - 1) {
                     nextBtn.innerText = 'Selesai & Lihat Hasil';
+                    nextBtn.style.backgroundColor = 'var(--correct)';
                 } else {
                     nextBtn.innerText = 'Soal Selanjutnya';
+                    nextBtn.style.backgroundColor = '#555';
                 }
             } else {
                 nextBtn.style.display = 'none';
@@ -795,24 +793,40 @@
         }
 
         function finishQuiz() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultScreen').style.display = 'block';
-            
-            const finalScore = Math.round((score / currentQuestions.length) * 100);
-            document.getElementById('finalScoreDisplay').innerText = finalScore;
-            document.getElementById('resultMessage').innerText = `Terima kasih telah mengerjakan, ${userData.name}!`;
+            if(confirm("Apakah kamu yakin ingin menyelesaikan ujian ini?")) {
+                document.getElementById('quizScreen').style.display = 'none';
+                document.getElementById('resultScreen').style.display = 'block';
+                
+                // 4. Perhitungan Berbasis Persentase (Double-check System)
+                let jawabanBenar = 0;
+                currentQuestions.forEach(q => {
+                    if (q.userAnswer === q.answer) {
+                        jawabanBenar++;
+                    }
+                });
 
-            // Simpan Riwayat
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            history.unshift({
-                name: userData.name,
-                class: userData.class,
-                score: finalScore,
-                date: new Date().toLocaleString('id-ID')
-            });
-            // Simpan maksimal 10 riwayat agar storage tidak penuh
-            if(history.length > 10) history.pop(); 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                let persentaseSkor = Math.round((jawabanBenar / currentQuestions.length) * 100);
+                let finalScore = Math.min(persentaseSkor, 100); // Batas absolut
+
+                document.getElementById('finalScoreDisplay').innerText = finalScore;
+                document.getElementById('resultMessage').innerText = `Kerja bagus, ${userData.name}!`;
+
+                // PUSH KE HALAMAN REKAP GLOBAL
+                simpanHasilKuis(userData.name, userData.class, "Pendidikan Pancasila STS-K5", finalScore);
+
+                // Simpan Riwayat Internal
+                const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                history.unshift({
+                    name: userData.name,
+                    class: userData.class,
+                    score: finalScore,
+                    date: new Date().toLocaleString('id-ID')
+                });
+                
+                // Simpan maksimal 10 riwayat agar storage tidak penuh
+                if(history.length > 10) history.pop(); 
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            }
         }
     </script>
 </body>

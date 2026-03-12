@@ -256,7 +256,7 @@
 
     <div class="container">
         <div id="login-screen" class="login-box">
-            <h1>🌟 Kuis Cerdas IPAS 🌟</h1>
+            <h1>🎒 Kuis Cerdas IPAS 🎒</h1>
             <p>Sumatif Tengah Semester - Kelas 5 Kurikulum Merdeka</p>
             
             <div class="input-group">
@@ -324,10 +324,8 @@
         // Database Soal (25 Soal, 5 Bergambar, Opsi seimbang, HOTS)
         const bankSoal = [
             {
-                // Soal Bergambar 1
                 q: "Perhatikan gambar sistem pernapasan berikut! Jika bagian yang ditunjuk huruf X mengalami gangguan, proses yang akan terhambat adalah...",
-                img: "./gambar/soal-pernapasan.jpg", // Jalur input gambar 1
-                alt: "Gambar diagram sistem pernapasan manusia menunjuk alveolus",
+                img: "./gambar/soal-pernapasan.jpg", alt: "Gambar diagram sistem pernapasan manusia menunjuk alveolus",
                 options: [
                     { text: "Penyerapan oksigen ke dalam darah", isCorrect: true },
                     { text: "Penyaringan debu pada udara masuk", isCorrect: false },
@@ -348,10 +346,8 @@
                 explanation: "Makanan dan minuman diolah menjadi nutrisi untuk memproduksi energi, mengatur metabolisme, dan meregenerasi sel."
             },
             {
-                // Soal Bergambar 2
                 q: "Perhatikan gambar tahapan pertumbuhan manusia berikut! Karakteristik utama yang terjadi pada fase yang ditunjukkan oleh nomor 3 adalah...",
-                img: "./gambar/soal-pertumbuhan.jpg", // Jalur input gambar 2
-                alt: "Gambar siklus pertumbuhan manusia dari bayi hingga lansia",
+                img: "./gambar/soal-pertumbuhan.jpg", alt: "Gambar siklus pertumbuhan manusia dari bayi hingga lansia",
                 options: [
                     { text: "Mengalami masa pubertas dan perubahan fisik pesat", isCorrect: true },
                     { text: "Mulai bisa berjalan dan mengucapkan beberapa kata", isCorrect: false },
@@ -383,10 +379,8 @@
                 explanation: "Letak silang (cross position) membuat posisi Indonesia sangat strategis sebagai jalur pelayaran lalu lintas dunia."
             },
             {
-                // Soal Bergambar 3
                 q: "Perhatikan gambar hewan endemik berikut! Hewan ini memiliki ciri khas dan habitat aslinya berada di pulau...",
-                img: "./gambar/soal-fauna.jpg", // Jalur input gambar 3
-                alt: "Gambar hewan endemik Anoa/Babi Rusa dari Sulawesi",
+                img: "./gambar/soal-fauna.jpg", alt: "Gambar hewan endemik Anoa/Babi Rusa dari Sulawesi",
                 options: [
                     { text: "Pulau Sulawesi yang berada di zona tipe peralihan", isCorrect: true },
                     { text: "Pulau Sumatra yang memiliki hutan hujan tropis", isCorrect: false },
@@ -440,10 +434,8 @@
                 explanation: "Kerusakan alveolus menghambat pertukaran gas, sehingga suplai oksigen ke seluruh sel tubuh akan berkurang."
             },
             {
-                // Soal Bergambar 4
                 q: "Perhatikan gambar piramida makanan berikut! Makanan yang berada di tingkat paling bawah berfungsi utama untuk...",
-                img: "./gambar/soal-nutrisi.jpg", // Jalur input gambar 4
-                alt: "Gambar piramida makanan menunjuk area karbohidrat",
+                img: "./gambar/soal-nutrisi.jpg", alt: "Gambar piramida makanan menunjuk area karbohidrat",
                 options: [
                     { text: "Memberikan energi yang dibutuhkan untuk beraktivitas fisik", isCorrect: true },
                     { text: "Membangun sel-sel tubuh yang baru dan rusak", isCorrect: false },
@@ -563,10 +555,8 @@
                 explanation: "Ciri kelamin sekunder pria saat masa remaja adalah tumbuh jakun, kumis, dan suara menjadi membesar/berat."
             },
             {
-                // Soal Bergambar 5
                 q: "Perhatikan gambar peta sebagian wilayah berikut! Komponen peta yang berfungsi menjelaskan makna simbol-simbol adalah...",
-                img: "./gambar/soal-peta.jpg", // Jalur input gambar 5
-                alt: "Gambar bagian dari komponen peta",
+                img: "./gambar/soal-peta.jpg", alt: "Gambar bagian dari komponen peta",
                 options: [
                     { text: "Legenda peta yang berada di bagian sudut", isCorrect: true },
                     { text: "Judul peta yang letaknya di bagian atas", isCorrect: false },
@@ -646,6 +636,21 @@
         // Panggil history saat load
         loadHistory();
 
+        // --- FUNGSI INTEGRASI REKAP ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let waktuSekarang = new Date().toLocaleString('id-ID'); 
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            riwayatKuis.push(dataBaru);
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
+
         function startQuiz() {
             const name = document.getElementById('student-name').value.trim();
             const kelas = document.getElementById('student-class').value.trim();
@@ -655,7 +660,7 @@
                 return;
             }
 
-            // Persiapan Data (Acak soal & Acak pilihan jawaban)
+            // 3. Reset Variabel Secara Menyeluruh 
             quizData = JSON.parse(JSON.stringify(bankSoal));
             shuffleArray(quizData);
             quizData.forEach(q => shuffleArray(q.options));
@@ -724,10 +729,17 @@
         }
 
         function selectOption(selectedIndex, isCorrect) {
+            // 1. Sistem Flagging: Mencegah tombol diklik berkali-kali secara cepat
+            if (userAnswers[currentQIndex] !== undefined) return;
+            
             userAnswers[currentQIndex] = selectedIndex;
             
             if(isCorrect) {
                 score += 4; // 25 soal x 4 = 100
+                
+                // 2. Fungsi Limiter (Pembatas agar tidak melebihi 100)
+                if (score > 100) score = 100;
+
                 document.getElementById('live-score').textContent = score;
             }
 
@@ -762,18 +774,34 @@
             const name = document.getElementById('student-name').value;
             const kelas = document.getElementById('student-class').value;
             const now = new Date();
-            const timeStr = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const timeStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-            // Simpan ke local storage
+            // 4. Perhitungan Berbasis Persentase (Double-check System)
+            let jawabanBenar = 0;
+            for (let i = 0; i < quizData.length; i++) {
+                let ansIdx = userAnswers[i];
+                if (ansIdx !== undefined && quizData[i].options[ansIdx].isCorrect) {
+                    jawabanBenar++;
+                }
+            }
+            let persentaseSkor = Math.round((jawabanBenar / quizData.length) * 100);
+            
+            // Limitasi absolut akhir
+            let skorAkhir = Math.min(persentaseSkor, 100);
+
+            // Simpan ke Halaman Rekap (Data Global)
+            simpanHasilKuis(name, kelas, "IPAS STS-K5", skorAkhir);
+
+            // Simpan ke local storage (Riwayat Internal Kuis)
             let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-            history.unshift({ name, kelas, score, time: timeStr });
+            history.unshift({ name, kelas, score: skorAkhir, time: timeStr });
             localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 
             document.getElementById('quiz-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'block';
             
             document.getElementById('result-text').innerHTML = `Hebat <strong>${name}</strong> (Kelas ${kelas})!<br>Nilai akhir kamu adalah:`;
-            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-score').textContent = skorAkhir;
             
             loadHistory(); // Update tampilan history di awal
         }

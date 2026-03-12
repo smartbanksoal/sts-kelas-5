@@ -296,58 +296,57 @@
         let userAnswers = []; // To track answered state
 
         // --- QUESTION BANK (25 HOTS Questions) ---
-        // Options word count is kept consistent per question
         const rawQuestions = [
             // --- Part of our body that work together (8 Questions) ---
             {
                 text: "Andi is eating a very spicy noodle. His face turns red and he drinks a lot of water. Which body part sends the spicy signal to his brain?",
-                options: ["His eyes", "His ears", "His nose", "His tongue"], // 2 words
+                options: ["His eyes", "His ears", "His nose", "His tongue"],
                 answer: "His tongue",
                 explanation: "The tongue has taste buds that detect flavors, including spicy food, and sends signals to the brain."
             },
             {
                 text: "When you play football, you need to run fast and kick the ball to the goal. Which body parts work together the most to do this?",
-                options: ["Legs feet", "Arms hands", "Eyes ears", "Nose hair"], // 2 words
+                options: ["Legs feet", "Arms hands", "Eyes ears", "Nose hair"],
                 answer: "Legs feet",
                 explanation: "Running and kicking primarily require the muscles and bones in our legs and feet to work together."
             },
-            { // IMAGE QUESTION 1
+            {
                 text: "Look at the picture. This organ pumps blood to all parts of our body so we can stay alive. What happens if this organ stops working?",
                 image: "gambar/heart.jpg",
                 imageAlt: "Gambar ilustrasi jantung manusia",
-                options: ["Body dies", "Body grows", "Body sleeps", "Body runs"], // 2 words
+                options: ["Body dies", "Body grows", "Body sleeps", "Body runs"],
                 answer: "Body dies",
                 explanation: "The heart pumps blood. If it stops, the body doesn't get oxygen and dies."
             },
             {
                 text: "Siti accidentally touched a hot kettle in the kitchen. She quickly pulled her hand away. Why did she do that?",
-                options: ["Skin felt hot", "Eyes saw fire", "Ears heard sound", "Nose smelled smoke"], // 3 words
+                options: ["Skin felt hot", "Eyes saw fire", "Ears heard sound", "Nose smelled smoke"],
                 answer: "Skin felt hot",
                 explanation: "Our skin is sensitive to temperature. It feels the heat and makes us react quickly to avoid burns."
             },
             {
                 text: "Budi is reading a book in a dark room. He cannot read the letters properly. Which body part needs light to function well?",
-                options: ["Eyes", "Ears", "Nose", "Skin"], // 1 word
+                options: ["Eyes", "Ears", "Nose", "Skin"],
                 answer: "Eyes",
                 explanation: "Our eyes require light to see objects and read text clearly."
             },
-            { // IMAGE QUESTION 2
+            {
                 text: "Look at the picture. The food we swallow goes down into this part to be broken down. What is the name of this organ?",
                 image: "gambar/stomach.jpg",
                 imageAlt: "Gambar ilustrasi lambung pada sistem pencernaan",
-                options: ["Stomach", "Lungs", "Brain", "Liver"], // 1 word
+                options: ["Stomach", "Lungs", "Brain", "Liver"],
                 answer: "Stomach",
                 explanation: "The stomach digests the food we swallow by breaking it down with acids."
             },
             {
                 text: "When we breathe in fresh air in the morning, our chest expands. Which organ is responsible for taking in the oxygen?",
-                options: ["The lungs", "The bones", "The blood", "The teeth"], // 2 words
+                options: ["The lungs", "The bones", "The blood", "The teeth"],
                 answer: "The lungs",
                 explanation: "The lungs are responsible for breathing in oxygen and breathing out carbon dioxide."
             },
             {
                 text: "You can hold a pencil and write beautifully on your notebook. Which parts of your body allow you to grip the pencil?",
-                options: ["Fingers", "Toes", "Knees", "Elbows"], // 1 word
+                options: ["Fingers", "Toes", "Knees", "Elbows"],
                 answer: "Fingers",
                 explanation: "Fingers have joints and muscles that allow us to grip objects like a pencil firmly."
             },
@@ -355,45 +354,45 @@
             // --- How tall are you (7 Questions) ---
             {
                 text: "My grandfather walks slowly. His hair is white and he uses a cane. Which adjective best describes my grandfather's physical condition?",
-                options: ["Old", "Young", "Fast", "Strong"], // 1 word
+                options: ["Old", "Young", "Fast", "Strong"],
                 answer: "Old",
                 explanation: "Walking slowly, having white hair, and using a cane are characteristics of someone who is old."
             },
             {
                 text: "An elephant cannot hide behind a small tree because its body takes up a lot of space. How do we describe the elephant?",
-                options: ["Very big", "Very small", "Very thin", "Very light"], // 2 words
+                options: ["Very big", "Very small", "Very thin", "Very light"],
                 answer: "Very big",
                 explanation: "An elephant takes up a lot of space because it is very big."
             },
-            { // IMAGE QUESTION 3
+            {
                 text: "Look at the picture of this animal. It has a very long neck to reach leaves on tall trees. What animal is this?",
                 image: "gambar/giraffe.jpg",
                 imageAlt: "Gambar jerapah memakan daun di pohon",
-                options: ["Giraffe", "Monkey", "Rabbit", "Turtle"], // 1 word
+                options: ["Giraffe", "Monkey", "Rabbit", "Turtle"],
                 answer: "Giraffe",
                 explanation: "A giraffe is famous for its long neck and legs."
             },
             {
                 text: "Rina always helps her mother sweep the floor and wash the dishes every afternoon. What kind of girl is Rina?",
-                options: ["Diligent girl", "Lazy girl", "Angry girl", "Sad girl"], // 2 words
+                options: ["Diligent girl", "Lazy girl", "Angry girl", "Sad girl"],
                 answer: "Diligent girl",
                 explanation: "Someone who frequently helps with chores is described as diligent."
             },
             {
                 text: "The ruler is 30 centimeters long. The pencil is 15 centimeters long. Which statement is correct about the ruler?",
-                options: ["It is long", "It is short", "It is thick", "It is soft"], // 3 words
+                options: ["It is long", "It is short", "It is thick", "It is soft"],
                 answer: "It is long",
                 explanation: "Compared to the 15cm pencil, the 30cm ruler is considered long."
             },
             {
                 text: "Budi exercises every day. He can lift heavy boxes easily. How do we describe Budi's body?",
-                options: ["Strong", "Weak", "Sick", "Tired"], // 1 word
+                options: ["Strong", "Weak", "Sick", "Tired"],
                 answer: "Strong",
                 explanation: "Being able to lift heavy things easily means the person is strong."
             },
             {
                 text: "A cheetah can catch its prey in a few seconds. It runs extremely fast. What is the opposite of the cheetah's speed?",
-                options: ["Slow", "Quick", "Smart", "Brave"], // 1 word
+                options: ["Slow", "Quick", "Smart", "Brave"],
                 answer: "Slow",
                 explanation: "The cheetah is fast. The opposite of fast is slow."
             },
@@ -401,65 +400,65 @@
             // --- The giraffe is taller than deer (Comparative) (10 Questions) ---
             {
                 text: "A car has four wheels and a bicycle has two wheels. A car can carry five people, but a bicycle only carries two. Which statement is true?",
-                options: ["Car is bigger", "Bike is bigger", "Car is smaller", "Bike is heavier"], // 3 words
+                options: ["Car is bigger", "Bike is bigger", "Car is smaller", "Bike is heavier"],
                 answer: "Car is bigger",
                 explanation: "A car holds more people and has more wheels, so it is bigger than a bicycle."
             },
             {
                 text: "Mount Rinjani is 3,726 meters high. Mount Bromo is 2,329 meters high. What can we conclude about Mount Rinjani?",
-                options: ["Higher than Bromo", "Lower than Bromo", "Smaller than Bromo", "Colder than Bromo"], // 3 words
+                options: ["Higher than Bromo", "Lower than Bromo", "Smaller than Bromo", "Colder than Bromo"],
                 answer: "Higher than Bromo",
                 explanation: "3,726 meters is a larger number than 2,329 meters, making Rinjani higher."
             },
-            { // IMAGE QUESTION 4
+            {
                 text: "Look at the picture. Animal A is a lion. Animal B is a house cat. Compare their sizes.",
                 image: "gambar/lion_cat.jpg",
                 imageAlt: "Gambar perbandingan singa dan kucing",
-                options: ["Lion is larger", "Cat is larger", "Lion is smaller", "Cat is heavier"], // 3 words
+                options: ["Lion is larger", "Cat is larger", "Lion is smaller", "Cat is heavier"],
                 answer: "Lion is larger",
                 explanation: "A wild lion is significantly larger and heavier than a domestic house cat."
             },
             {
                 text: "In the math test, Andi got 90 and Budi got 75. Therefore, Andi's score is ... than Budi's score.",
-                options: ["Better", "Worse", "Lower", "Badder"], // 1 word
+                options: ["Better", "Worse", "Lower", "Badder"],
                 answer: "Better",
                 explanation: "90 is a higher score than 75, so Andi's score is better."
             },
             {
                 text: "An airplane takes 2 hours to go to Bali. A bus takes 24 hours to go to Bali. The airplane is ... than the bus.",
-                options: ["Faster", "Slower", "Longer", "Cheaper"], // 1 word
+                options: ["Faster", "Slower", "Longer", "Cheaper"],
                 answer: "Faster",
                 explanation: "2 hours is less time than 24 hours, meaning the airplane travels faster."
             },
-            { // IMAGE QUESTION 5
+            {
                 text: "Look at the picture of the two trees. Tree A reaches the roof of the house. Tree B only reaches the window. Which sentence is correct?",
                 image: "gambar/trees.jpg",
                 imageAlt: "Gambar pohon A yang tinggi dan pohon B yang pendek",
-                options: ["Tree A taller", "Tree B taller", "Tree A shorter", "Tree B bigger"], // 3 words
+                options: ["Tree A taller", "Tree B taller", "Tree A shorter", "Tree B bigger"],
                 answer: "Tree A taller",
                 explanation: "Since Tree A reaches higher (the roof) than Tree B (the window), Tree A is taller."
             },
             {
                 text: "A dictionary usually has 1000 pages. A comic book usually has 50 pages. We can say that the dictionary is ... than the comic book.",
-                options: ["Thicker", "Thinner", "Lighter", "Smaller"], // 1 word
+                options: ["Thicker", "Thinner", "Lighter", "Smaller"],
                 answer: "Thicker",
                 explanation: "More pages make a book thicker. Therefore, the dictionary is thicker."
             },
             {
                 text: "Watermelon is heavy and difficult to carry with one hand. An apple is light and easy to carry. The watermelon is ... than the apple.",
-                options: ["Heavier", "Lighter", "Smaller", "Sweeter"], // 1 word
+                options: ["Heavier", "Lighter", "Smaller", "Sweeter"],
                 answer: "Heavier",
                 explanation: "Because it is difficult to carry and weighs more, the watermelon is heavier."
             },
             {
                 text: "The weather in Jakarta is 35 degrees Celsius. The weather in Bandung is 22 degrees Celsius. Jakarta is ... than Bandung.",
-                options: ["Hotter", "Colder", "Cooler", "Wetter"], // 1 word
+                options: ["Hotter", "Colder", "Cooler", "Wetter"],
                 answer: "Hotter",
                 explanation: "35 degrees is a higher temperature than 22 degrees, making it hotter."
             },
             {
                 text: "A tortoise walks 1 meter in a minute. A rabbit runs 50 meters in a minute. The tortoise is ... than the rabbit.",
-                options: ["Slower", "Faster", "Quicker", "Bigger"], // 1 word
+                options: ["Slower", "Faster", "Quicker", "Bigger"],
                 answer: "Slower",
                 explanation: "Covering less distance in the same amount of time means the tortoise is slower."
             }
@@ -493,6 +492,30 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
         }
 
+        // --- RECAP INTEGRATION FUNCTION ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            // 1. Ambil data yang sudah ada di Local Storage (atau buat array baru jika belum ada)
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            
+            // 2. Dapatkan waktu saat ini
+            let waktuSekarang = new Date().toLocaleString('id-ID');
+            
+            // 3. Buat objek data baru
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            
+            // 4. Masukkan data baru ke dalam array riwayat
+            riwayatKuis.push(dataBaru);
+            
+            // 5. Simpan kembali array yang sudah di-update ke Local Storage
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
+
         // --- QUIZ LOGIC ---
         function startQuiz() {
             const name = document.getElementById('student-name').value.trim();
@@ -505,7 +528,7 @@
 
             currentUser = { name, class: cls };
             
-            // Prepare Questions
+            // Prepare Questions & Reset Semua Variabel
             quizQuestions = shuffleArray(rawQuestions); // Acak soal
             userAnswers = new Array(quizQuestions.length).fill(null);
             currentQuestionIndex = 0;
@@ -570,6 +593,9 @@
         }
 
         function selectAnswer(btnElement, selectedOpt, correctOpt, explanation) {
+            // Sistem Flagging: Mencegah eksekusi jika sudah pernah dijawab
+            if (userAnswers[currentQuestionIndex] !== null) return;
+
             // Disable all options
             const buttons = document.querySelectorAll('.option-btn');
             buttons.forEach(b => b.disabled = true);
@@ -577,6 +603,11 @@
             if (selectedOpt === correctOpt) {
                 btnElement.classList.add('correct');
                 score += 4; // 25 soal x 4 = 100
+                
+                // Penggunaan Fungsi Pembatas (limiter)
+                if (score > 100) {
+                    score = 100;
+                }
             } else {
                 btnElement.classList.add('wrong');
                 // Highlight correct answer
@@ -611,12 +642,34 @@
         }
 
         function finishQuiz() {
-            saveHistory(score);
+            // Perhitungan Berbasis Persentase (Double-check calculation)
+            let jumlahJawabanBenar = 0;
+            userAnswers.forEach((ans, index) => {
+                // Memastikan indeks dan jawaban ada, lalu cek kebenaran
+                if (ans && ans.selected === quizQuestions[index].answer) {
+                    jumlahJawabanBenar++;
+                }
+            });
+
+            // Menghitung persentase dari jawaban yang benar
+            let persentaseSkor = Math.round((jumlahJawabanBenar / quizQuestions.length) * 100);
+            
+            // Limit absolute max ke 100
+            let skorAkhir = Math.min(persentaseSkor, 100);
+
+            // Simpan ke Halaman Rekap Global
+            simpanHasilKuis(currentUser.name, currentUser.class, "B. Inggris ENG-STS-K5", skorAkhir);
+            
+            // Simpan ke Riwayat Internal Kuis Ini
+            saveHistory(skorAkhir);
+
             document.getElementById('quiz-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'block';
             document.getElementById('res-name').innerText = currentUser.name;
             document.getElementById('res-class').innerText = currentUser.class;
-            document.getElementById('final-score').innerText = score;
+            
+            // Tampilkan Skor Akhir hasil double-check
+            document.getElementById('final-score').innerText = skorAkhir;
         }
 
         // Initialize

@@ -76,7 +76,6 @@
         }
         
         .nav-buttons { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
-        /* PERBAIKAN 1: Hapus display: none di sini agar diatur sepenuhnya oleh class .hidden */
         .btn-nav { background: #17a2b8; color: white; flex: 1; }
         
         /* History Table */
@@ -473,13 +472,30 @@
         // --- VARIABEL STATE ---
         let currentQuestions = [];
         let currentIndex = 0;
-        let score = 0;
         let userData = { nama: '', kelas: '' };
-        let hasAnswered = false;
+        
+        // --- KEAMANAN 1: Array Flagging Khusus ---
+        // Array ini merekam jawaban agar soal tidak bisa dijawab berulang meski di back
+        let userAnswers = []; 
 
         window.onload = () => {
             renderHistory();
         };
+
+        // --- FUNGSI INTEGRASI REKAP ---
+        function simpanHasilKuis(namaSiswa, kelasSiswa, namaMapel, skorAkhir) {
+            let riwayatKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let waktuSekarang = new Date().toLocaleString('id-ID'); 
+            let dataBaru = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                mapel: namaMapel,
+                nilai: skorAkhir,
+                waktu: waktuSekarang
+            };
+            riwayatKuis.push(dataBaru);
+            localStorage.setItem('dataKuis', JSON.stringify(riwayatKuis));
+        }
 
         function startQuiz() {
             const namaInput = document.getElementById('nama').value.trim();
@@ -492,8 +508,10 @@
             
             userData.nama = namaInput;
             userData.kelas = kelasInput;
-            score = 0;
+            
+            // --- KEAMANAN 2: Reset Menyeluruh Variabel ---
             currentIndex = 0;
+            userAnswers = new Array(bankSoal.length).fill(null);
             
             currentQuestions = [...bankSoal].sort(() => Math.random() - 0.5);
             
@@ -506,15 +524,16 @@
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('quizScreen').classList.remove('hidden');
             
+            // Tampilkan Skor 0 diawal
+            document.getElementById('scoreText').textContent = `Skor Sementara: 0`;
+            
             loadQuestion();
         }
 
         function loadQuestion() {
-            hasAnswered = false;
             const q = currentQuestions[currentIndex];
             
             document.getElementById('progressText').textContent = `Soal: ${currentIndex + 1} / ${currentQuestions.length}`;
-            document.getElementById('scoreText').textContent = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
             
             document.getElementById('questionArea').innerHTML = `<div class="question-text">${currentIndex + 1}. ${q.q}</div>`;
             
@@ -530,17 +549,37 @@
             const optionsArea = document.getElementById('optionsArea');
             optionsArea.innerHTML = '';
             
+            // Cek apakah soal ini sudah pernah dijawab sebelumnya
+            const isAnswered = userAnswers[currentIndex] !== null;
+            
             q.shuffledOptions.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 const letter = String.fromCharCode(65 + idx); 
                 btn.innerHTML = `<strong>${letter}.</strong> ${opt.text}`;
-                btn.onclick = () => checkAnswer(opt.originalIndex, idx, btn);
+                
+                // Jika sudah dijawab, matikan tombol dan tampilkan mana yang diklik
+                if (isAnswered) {
+                    btn.disabled = true;
+                    if (opt.originalIndex === q.ans) {
+                        btn.classList.add('correct');
+                    } else if (opt.originalIndex === userAnswers[currentIndex] && opt.originalIndex !== q.ans) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => checkAnswer(opt.originalIndex, idx, btn);
+                }
+                
                 optionsArea.appendChild(btn);
             });
             
-            // PERBAIKAN 3: Menyeragamkan logika memunculkan tombol dengan classList 'hidden'
-            document.getElementById('pembahasanArea').style.display = 'none';
+            const pembahasanArea = document.getElementById('pembahasanArea');
+            if (isAnswered) {
+                pembahasanArea.innerHTML = `<strong>Pembahasan:</strong><br>${q.pembahasan}`;
+                pembahasanArea.style.display = 'block';
+            } else {
+                pembahasanArea.style.display = 'none';
+            }
             
             if (currentIndex > 0) {
                 document.getElementById('btnPrev').classList.remove('hidden');
@@ -558,8 +597,11 @@
         }
 
         function checkAnswer(selectedOriginalIndex, btnIndex, btnElement) {
-            if (hasAnswered) return; 
-            hasAnswered = true;
+            // Mencegah klik dua kali / dobel jawaban
+            if (userAnswers[currentIndex] !== null) return; 
+            
+            // Kunci jawaban ke dalam array
+            userAnswers[currentIndex] = selectedOriginalIndex;
             
             const q = currentQuestions[currentIndex];
             const buttons = document.querySelectorAll('.option-btn');
@@ -568,14 +610,21 @@
             
             if (selectedOriginalIndex === q.ans) {
                 btnElement.classList.add('correct');
-                score++;
             } else {
                 btnElement.classList.add('wrong');
                 const correctBtnIndex = q.shuffledOptions.findIndex(o => o.originalIndex === q.ans);
                 buttons[correctBtnIndex].classList.add('correct');
             }
             
-            document.getElementById('scoreText').textContent = `Skor Sementara: ${Math.round((score / currentQuestions.length) * 100)}`;
+            // --- KEAMANAN 3: Hitung Skor Sementara Berbasis Persentase ---
+            let tempJawabanBenar = 0;
+            userAnswers.forEach((ans, i) => {
+                if(ans !== null && ans === currentQuestions[i].ans) {
+                    tempJawabanBenar++;
+                }
+            });
+            let tempScore = Math.min(Math.round((tempJawabanBenar / currentQuestions.length) * 100), 100);
+            document.getElementById('scoreText').textContent = `Skor Sementara: ${tempScore}`;
             
             const pembahasanArea = document.getElementById('pembahasanArea');
             pembahasanArea.innerHTML = `<strong>Pembahasan:</strong><br>${q.pembahasan}`;
@@ -597,10 +646,23 @@
         }
 
         function finishQuiz() {
-            const finalScore = Math.round((score / currentQuestions.length) * 100);
+            // --- KEAMANAN 4: Perhitungan Final Berbasis Persentase (Double-check) & Limiter ---
+            let jumlahJawabanBenar = 0;
+            userAnswers.forEach((ans, index) => {
+                if (ans !== null && ans === currentQuestions[index].ans) {
+                    jumlahJawabanBenar++;
+                }
+            });
+            
+            let persentaseSkor = Math.round((jumlahJawabanBenar / currentQuestions.length) * 100);
+            let finalScore = Math.min(persentaseSkor, 100); // Batas nilai absolut 100
+
             const date = new Date();
             const timeStr = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
             
+            // PUSH KE HALAMAN REKAP GLOBAL
+            simpanHasilKuis(userData.nama, userData.kelas, "B. Indonesia IND-STS-K5", finalScore);
+
             const record = {
                 nama: userData.nama,
                 kelas: userData.kelas,
